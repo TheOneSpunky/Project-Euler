@@ -12,12 +12,16 @@ auto main() -> int {
   constexpr auto limit { 1000 };
   constexpr auto a     { 3 };
   constexpr auto b     { 5 };
+  constexpr auto c     { a * b };
 
-  auto sum{ 0 };
+  const auto sumMultiples {
+    [&limit](const int& factor) -> int {
+      const auto n{ (limit - 1) / factor };
+      return (factor * n * (n + 1) / 2);
+    }
+  };
 
-  for (auto i{ 1 }; i < limit; i++)
-    if (i % a == 0 || i % b == 0)
-      sum += i;
+  const auto sum{ sumMultiples(a) + sumMultiples(b) - sumMultiples(c) };
 
   std::cout << sum << std::endl;
 
