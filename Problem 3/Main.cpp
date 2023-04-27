@@ -7,26 +7,55 @@
  */
 
 #include <iostream>
-#include <cmath>
+#include <random>
+#include <numeric>
 
-auto largestPrimeFactor(long long number) -> long long {
-  while (number % 2 == 0)
-    number /= 2;
-  while (number % 3 == 0)
-    number /= 3;
-  if (number == 1)
-    return 3;
+auto gcd(long long a, long long b) -> long long {
+  if (b == 0)
+    return a;
 
-  for (auto i{ long long{5} }, w{ long long{2} }; i <= std::sqrt(number); i += w, w = 6 - w)
-    while (number % i == 0)
-      number /= i;
+  return gcd(b, a % b);
+}
 
-  return ((number > 1) ? number : 3);
+auto pollardsRho(long long n) -> long long {
+  if (n % 2 == 0)
+    return 2;
+
+  std::random_device rd;
+
+  auto range        { std::mt19937_64{rd()} };
+  auto distribution { std::uniform_int_distribution<long long>(2, n - 2) };
+  auto x            { distribution(range) };
+  auto y            { x };
+  auto c            { distribution(range) };
+  auto d            { long long{1} };
+
+  while (d == 1) {
+    x = (x * x + c) % n;
+    y = (y * y + c) % n;
+    y = (y * y + c) % n;
+    d = gcd(std::abs(x - y), n);
+  }
+
+  return d;
+}
+
+auto largestPrimeFactor(long long n) -> long long {
+  for (auto i{ long long{2} }; i <= std::sqrt(n); i++)
+    if (n % i == 0)
+      return std::max(i, largestPrimeFactor(n / i));
+
+  auto factor{ pollardsRho(n) };
+
+  if (factor == n)
+    return factor;
+
+  return std::max(largestPrimeFactor(factor), largestPrimeFactor(n / factor));
 }
 
 auto main() -> int {
-  constexpr auto number        { long long{600851475143} };
-  auto           largestFactor { largestPrimeFactor(number) };
+  constexpr auto number        { 600851475143 };
+  const auto     largestFactor { largestPrimeFactor(number) };
 
   std::cout << largestFactor << std::endl;
 
