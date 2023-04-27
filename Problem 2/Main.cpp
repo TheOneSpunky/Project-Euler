@@ -14,14 +14,13 @@ auto main() -> int {
   constexpr auto limit{ 4000000 };
 
   auto sum { 0 };
-  auto a   { 1 };
-  auto b   { 2 };
+  auto a   { 2 };
+  auto b   { 8 };
 
-  while (b <= limit) {
-    if (b % 2 == 0)
-      sum += b;
+  while (a <= limit) {
+    sum += a;
 
-    const auto c{ a + b };
+    const auto c{ 4 * b + a };
 
     a = b;
     b = c;
