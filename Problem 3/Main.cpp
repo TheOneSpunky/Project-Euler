@@ -12,15 +12,16 @@
 auto largestPrimeFactor(long long number) -> long long {
   while (number % 2 == 0)
     number /= 2;
-
+  while (number % 3 == 0)
+    number /= 3;
   if (number == 1)
-    return 2;
+    return 3;
 
-  for (auto i{ long long{3} }; i <= std::sqrt(number); i += 2)
+  for (auto i{ long long{5} }, w{ long long{2} }; i <= std::sqrt(number); i += w, w = 6 - w)
     while (number % i == 0)
       number /= i;
 
-  return ((number > 1) ? number : 2);
+  return ((number > 1) ? number : 3);
 }
 
 auto main() -> int {
