@@ -10,10 +10,6 @@
 #include <vector>
 #include <cmath>
 
-// Remove these
-#include <numeric>
-#include <algorithm>
-
 auto isPrime(const int& n) -> bool {
   if (n <= 1)
     return false;
