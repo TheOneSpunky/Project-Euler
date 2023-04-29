@@ -7,28 +7,42 @@
  */
 
 #include <iostream>
+#include <vector>
+#include <cmath>
+
+// Remove these
 #include <numeric>
 #include <algorithm>
 
-auto gcd(long long a, long long b) -> long long {
-  while (b != 0) {
-    auto temp{ b };
-    b = a % b;
-    a = temp;
-  }
+auto isPrime(const int& n) -> bool {
+  if (n <= 1)
+    return false;
 
-  return a;
+  for (auto i{ 2 }; i <= std::sqrt(n); i++)
+    if (n % i == 0)
+      return false;
+
+  return true;
 }
 
-auto lcm(long long a, long long b) -> long long {
-  return (a * b) / gcd(a, b);
+auto highestPowerInRange(const int& prime, int range) -> int {
+  auto power{ 0 };
+
+  while (range >= prime) {
+    power++;
+    range /= prime;
+  }
+
+  return power;
 }
 
 auto main() -> int {
-  auto smallestMultiple { long long{1} };
+  constexpr auto numbersRange     { 20 };
+  auto           smallestMultiple { long long{1} };
 
-  for (auto i{ long long{2} }; i <= 20; i++)
-    smallestMultiple = lcm(smallestMultiple, i);
+  for (auto i{ 2 }; i <= numbersRange; i++)
+    if (isPrime(i))
+      smallestMultiple *= std::pow(i, highestPowerInRange(i, numbersRange));
 
   std::cout << smallestMultiple << std::endl;
 
