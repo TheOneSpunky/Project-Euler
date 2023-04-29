@@ -21,17 +21,23 @@ auto isPalindrome(int n) -> bool {
 
 auto main() -> int {
   constexpr auto min{ 100 };
-  constexpr auto max{ 1000 };
 
   auto maxPalindrome{ 0 };
 
-  for (auto i{ 100 }; i < max; i++)
-    for (auto j{ 100 }; j < max; j++) {
+  for (auto i{ 999 }; i >= min; i--) {
+    if (i * 999 <= maxPalindrome)
+      break;
+
+    for (auto j{ 999 }; j >= i; j--) {
       auto product{ i * j };
 
-      if (isPalindrome(product) && product > maxPalindrome)
+      if (product <= maxPalindrome)
+        break;
+
+      if (isPalindrome(product))
         maxPalindrome = product;
     }
+  }
 
   std::cout << maxPalindrome << std::endl;
 
