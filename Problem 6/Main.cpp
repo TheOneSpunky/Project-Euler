@@ -19,13 +19,11 @@
 #include <array>
 
 auto main() -> int {
-  auto numbers{ std::array<int, 100>{} };
+  constexpr auto n{ 100 };
 
-  std::iota(numbers.begin(), numbers.end(), 1);
-
-  const auto sumOfSquares { std::transform_reduce(numbers.begin(), numbers.end(), 0, std::plus<>(), [](auto n) { return n * n; }) };
-  const auto sum          { std::accumulate(numbers.begin(), numbers.end(), 0) };
+  const auto sum          { n * (n + 1) / 2 };
   const auto squareOfSum  { sum * sum };
+  const auto sumOfSquares { n * (n + 1) * (2 * n + 1) / 6 };
   const auto difference   { squareOfSum - sumOfSquares };
 
   std::cout << difference << std::endl;
