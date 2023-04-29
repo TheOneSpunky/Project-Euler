@@ -7,41 +7,16 @@
  */
 
 #include <iostream>
-#include <vector>
+#include <array>
 #include <cmath>
-
-auto isPrime(const int& n) -> bool {
-  if (n <= 1)
-    return false;
-  else if (n == 2)
-    return true;
-  else if (n % 2 == 0)
-    return false;
-  for (auto i{ 3 }; i <= n / 2; i += 2)
-    if (n % i == 0)
-      return false;
-
-  return true;
-}
-
-auto highestPowerInRange(const int& prime, int range) -> int {
-  auto power{ 0 };
-
-  while (range >= prime) {
-    power++;
-    range /= prime;
-  }
-
-  return power;
-}
 
 auto main() -> int {
   constexpr auto numbersRange     { 20 };
   auto           smallestMultiple { long long{1} };
+  constexpr auto primes           { std::array<int, 8>{2, 3, 5, 7, 11, 13, 17, 19} };
 
-  for (auto i{ 2 }; i <= numbersRange; i++)
-    if (isPrime(i))
-      smallestMultiple *= std::pow(i, highestPowerInRange(i, numbersRange));
+  for (const auto& prime : primes)
+    smallestMultiple *= static_cast<long long>(std::pow(prime, static_cast<int>(std::floor(std::log(numbersRange) / std::log(prime)))));
 
   std::cout << smallestMultiple << std::endl;
 
