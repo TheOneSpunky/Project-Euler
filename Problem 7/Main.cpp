@@ -7,35 +7,38 @@
  */
 
 #include <iostream>
+#include <vector>
 #include <cmath>
 
-auto isPrime(const unsigned long long& n) -> unsigned long long {
-  if (n <= 1)
-    return false;
-  else if (n <= 3)
-    return true;
-  else if (n % 2 == 0)
-    return false;
+auto sieveOfEratosthenes(unsigned long long limit) -> std::vector<bool> {
+  const auto sqrtLimit { std::sqrt(limit) };
+  auto       prime     { std::vector<bool>(limit + 1, true) };
 
-  const auto limit{ static_cast<unsigned long long>(std::sqrt(n)) };
+  prime[0] = prime[1] = false;
 
-  for (auto i{ unsigned long long{3} }; i <= limit; i += 2)
-    if (n % i == 0)
-      return false;
+  for (auto i{ unsigned long long{2} }; i <= sqrtLimit; i++)
+    if (prime[i])
+      for (auto j{ unsigned long long{i * i} }; j <= limit; j += i)
+        prime[j] = false;
 
-  return true;
+  return prime;
 }
 
-auto main() -> int {
+int main() {
   constexpr auto targetPrime { 10001 };
-  auto           primeCount  { 0 };
-  auto           number      { 1 };
+  constexpr auto limit       { 200000 };
 
-  while (primeCount < targetPrime) {
-    number++;
-    if (isPrime(number))
+  auto prime      { sieveOfEratosthenes(limit) };
+  auto primeCount { 0 };
+  auto number     { unsigned long long{} };
+
+  for (number = 2; number <= limit; number++)
+    if (prime[number]) {
       primeCount++;
-  }
+
+      if (primeCount == targetPrime)
+        break;
+    }
 
   std::cout << number << std::endl;
 
