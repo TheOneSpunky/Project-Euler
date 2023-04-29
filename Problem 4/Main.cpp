@@ -11,12 +11,15 @@
 #include <algorithm>
 
 auto isPalindrome(int n) -> bool {
-  auto number   { std::to_string(n) };
-  auto reversed { number };
+  auto original { n };
+  auto reversed { 0 };
 
-  std::reverse(reversed.begin(), reversed.end());
+  while (original > 0) {
+    reversed =  reversed * 10 + original % 10;
+    original /= 10;
+  }
 
-  return number == reversed;
+  return n == reversed;
 }
 
 auto main() -> int {
