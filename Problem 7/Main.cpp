@@ -10,37 +10,34 @@
 #include <vector>
 #include <cmath>
 
-auto sieveOfEratosthenes(unsigned long long limit) -> std::vector<bool> {
-  const auto sqrtLimit { std::sqrt(limit) };
-  auto       prime     { std::vector<bool>(limit + 1, true) };
+auto sieveOfEratosthenes(const int& n) -> std::vector<int> {
+  const auto limit      { static_cast<int>(n * (std::log(n) + std::log(std::log(n)))) };
+  const auto sqrtLimit  { std::sqrt(limit) };
+  auto       primeFlags { std::vector<bool>(limit + 1, true) };
+  auto       primes     { std::vector<int>{} };
 
-  prime[0] = prime[1] = false;
+  primeFlags[0] = primeFlags[1] = false;
 
-  for (auto i{ unsigned long long{2} }; i <= sqrtLimit; i++)
-    if (prime[i])
-      for (auto j{ unsigned long long{i * i} }; j <= limit; j += i)
-        prime[j] = false;
+  for (auto i{ 2 }; i <= sqrtLimit; i++)
+    if (primeFlags[i]) {
+      primes.push_back(i);
 
-  return prime;
-}
-
-int main() {
-  constexpr auto targetPrime { 10001 };
-  constexpr auto limit       { 200000 };
-
-  auto prime      { sieveOfEratosthenes(limit) };
-  auto primeCount { 0 };
-  auto number     { unsigned long long{} };
-
-  for (number = 2; number <= limit; number++)
-    if (prime[number]) {
-      primeCount++;
-
-      if (primeCount == targetPrime)
-        break;
+      for (auto j{ i * i }; j <= limit; j += i)
+        primeFlags[j] = false;
     }
 
-  std::cout << number << std::endl;
+  for (auto i{ primes.back() + 2 }; i <= limit; i += 2)
+    if (primeFlags[i])
+      primes.push_back(i);
+
+  return primes;
+}
+
+auto main() -> int {
+  constexpr auto targetPrime { 10001 };
+  const auto     primes      { sieveOfEratosthenes(targetPrime) };
+
+  std::cout << primes[targetPrime - 1] << std::endl;
 
   return 0;
 }
