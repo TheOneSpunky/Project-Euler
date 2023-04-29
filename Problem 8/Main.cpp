@@ -57,15 +57,31 @@ auto main() -> int {
     }
   };
 
-  auto maxProduct{ unsigned long long{0} };
+  auto maxProduct  { unsigned long long{0} };
+  auto product     { unsigned long long{1} };
+  auto windowStart { 0 };
 
-  for (auto i{ unsigned long long{0} }; i <= number.size() - 13; i++) {
-    auto product{ unsigned long long{1} };
+  for (auto i{ unsigned long long{0} }; i < number.size(); i++) {
+    auto digit{ static_cast<unsigned long long>(number[i] - '0') };
 
-    for (auto j{ i }; j < i + 13; j++)
-      product *= static_cast<unsigned long long>(number[j] - '0');
+    if (digit == 0) {
+      product     = 1;
+      windowStart = i + 1;
+    }
+    else {
+      product *= digit;
 
-    maxProduct = std::max(maxProduct, product);
+      if (i - windowStart >= 12) {
+        maxProduct =  std::max(maxProduct, product);
+        product    /= static_cast<unsigned long long>(number[windowStart] - '0');
+        windowStart++;
+
+        while (windowStart < number.size() && number[windowStart] == '0') {
+          windowStart++;
+          i++;
+        }
+      }
+    }
   }
 
   std::cout << maxProduct << std::endl;
