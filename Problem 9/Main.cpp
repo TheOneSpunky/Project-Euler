@@ -11,17 +11,20 @@
  */
 
 #include <iostream>
-#include <cmath>
 
 auto main() -> int {
-  constexpr auto targetSum{ 1000 };
+  constexpr auto targetDivisor{ 500 };
 
-  for (auto a{ 1 }; a < targetSum; a++)
-    for (auto b{ a + 1 }; b < targetSum - a; b++) {
-      const auto c{ targetSum - a - b };
+  for (auto m{ 2 }; m < targetDivisor; m++)
+    if (targetDivisor % m == 0) {
+      const auto mn { targetDivisor / m };
+      const auto n  { mn - m };
 
-      if (a * a + b * b == c * c) {
-        auto product{ a * b * c };
+      if (m > n && n > 0) {
+        const auto a       { m * m - n * n };
+        const auto b       { 2 * m * n };
+        const auto c       { m * m + n * n };
+        const auto product { a * b * c };
 
         std::cout << "The Pythagorean triplet is: " << a << ", " << b << ", " << c << std::endl;
         std::cout << "The product abc is:         " << product << std::endl;
