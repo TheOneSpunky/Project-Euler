@@ -13,9 +13,10 @@
 #include <iostream>
 
 auto main() -> int {
-  constexpr auto targetDivisor{ 500 };
+  constexpr auto targetDivisor { 500 };
+  constexpr auto mMax          { 22 };
 
-  for (auto m{ 2 }; m < targetDivisor; m++)
+  for (auto m{ 2 }; m < mMax; m++) {
     if (targetDivisor % m == 0) {
       const auto mn { targetDivisor / m };
       const auto n  { mn - m };
@@ -32,6 +33,7 @@ auto main() -> int {
         return 0;
       }
     }
+  }
 
   return 1;
 }
