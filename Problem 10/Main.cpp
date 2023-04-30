@@ -8,9 +8,8 @@
 
 #include <iostream>
 #include <vector>
-#include <numeric>
 
-auto sieveOfEratosthenes(int limit) -> std::vector<bool> {
+auto sieveOfEratosthenes(const int& limit) -> std::vector<bool> {
   auto primes{ std::vector<bool>(limit + 1, true) };
 
   primes[0] = primes[1] = false;
@@ -23,11 +22,11 @@ auto sieveOfEratosthenes(int limit) -> std::vector<bool> {
   return primes;
 }
 
-auto sumPrimes(int limit) -> long long {
+auto sumPrimes(const int& limit) -> long long {
   auto primes { sieveOfEratosthenes(limit) };
-  auto sum    { long long{0} };
+  auto sum    { long long{2} };
 
-  for (auto i{ 2 }; i < limit; i++)
+  for (auto i{ 3 }; i < limit; i += 2)
     if (primes[i])
       sum += i;
 
@@ -35,8 +34,8 @@ auto sumPrimes(int limit) -> long long {
 }
 
 auto main() -> int {
-  const auto limit { 2000000 };
-  const auto sum   { sumPrimes(limit) };
+  constexpr auto limit { 2000000 };
+  const auto     sum   { sumPrimes(limit) };
 
   std::cout << sum << std::endl;
 
