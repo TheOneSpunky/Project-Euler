@@ -9,25 +9,25 @@
 #include <iostream>
 #include <vector>
 
-auto sieveOfEratosthenes(const int& limit) -> std::vector<bool> {
-  auto primes{ std::vector<bool>(limit + 1, true) };
+auto oddSieveOfEratosthenes(const int& limit) -> std::vector<bool> {
+  auto primes{ std::vector<bool>((limit + 1) / 2, true) };
 
-  primes[0] = primes[1] = false;
+  primes[0] = false;
 
-  for (auto i{ 2 }; i * i <= limit; i++)
-    if (primes[i])
-      for (auto j{ i * i }; j <= limit; j += i)
-        primes[j] = false;
+  for (auto i{ 3 }; i * i <= limit; i += 2)
+    if (primes[i / 2])
+      for (auto j{ i * i }; j <= limit; j += i * 2)
+        primes[j / 2] = false;
 
   return primes;
 }
 
 auto sumPrimes(const int& limit) -> long long {
-  auto primes { sieveOfEratosthenes(limit) };
+  auto primes { oddSieveOfEratosthenes(limit) };
   auto sum    { long long{2} };
 
   for (auto i{ 3 }; i < limit; i += 2)
-    if (primes[i])
+    if (primes[i / 2])
       sum += i;
 
   return sum;
