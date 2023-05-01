@@ -16,42 +16,49 @@
  */
 
 #include <iostream>
-#include <unordered_map>
+#include <vector>
 
-auto collatzLength(const long long& n, std::unordered_map<long long, long long>& memo) -> long long {
-  if (n == 1)
-    return 1;
+auto collatzLength(long long n, std::vector<long long>& lengths) -> long long {
+  const auto original { n };
+  auto       length   { 0LL };
 
-  if (memo.find(n) != memo.end())
-    return memo[n];
+  while (n != 1) {
+    if (n % 2 == 0)
+      n /= 2;
+    else
+      n = 3 * n + 1;
 
-  auto length{ 1LL };
+    length++;
 
-  if (n % 2 == 0)
-    length += collatzLength(n / 2, memo);
-  else
-    length += collatzLength(3 * n + 1, memo);
+    if (n < original) {
+      length += lengths[n];
 
-  memo[n] = length;
+      break;
+    }
+  }
+
+  lengths[original] = length;
 
   return length;
 }
 
 auto main() -> int {
-  constexpr auto limit{ 1000000 };
+  constexpr auto limit   { 1000000 };
+  auto           lengths { std::vector<long long>(limit, 0) };
+
+  lengths[1] = 1;
+
+  for (auto i{ 1 }; i < limit; i++)
+    collatzLength(i, lengths);
 
   auto longestChain   { 0LL };
   auto startingNumber { 0LL };
-  auto memo           { std::unordered_map<long long, long long>{} };
 
-  for (auto i{ 1 }; i < limit; i++) {
-    const auto length{ collatzLength(i, memo) };
-
-    if (length > longestChain) {
-      longestChain   = length;
+  for (auto i{ 1 }; i < limit; i++)
+    if (lengths[i] > longestChain) {
+      longestChain   = lengths[i];
       startingNumber = i;
     }
-  }
 
   std::cout << startingNumber << std::endl;
 
