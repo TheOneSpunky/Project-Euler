@@ -23,42 +23,42 @@ auto collatzLength(long long n, std::vector<long long>& lengths) -> long long {
   auto       length   { 0LL };
 
   while (n != 1) {
-    if (n % 2 == 0)
-      n /= 2;
+    if ((n & 1) == 0)
+      n >>= 1;
     else
       n = 3 * n + 1;
 
     length++;
 
-    if (n < original) {
+    if (n < original && n < static_cast<long long>(lengths.size())) {
       length += lengths[n];
-
       break;
     }
   }
 
-  lengths[original] = length;
+  if (original < static_cast<long long>(lengths.size()))
+    lengths[original] = length;
 
   return length;
 }
 
 auto main() -> int {
   constexpr auto limit   { 1000000 };
-  auto           lengths { std::vector<long long>(limit, 0) };
+  auto           lengths { std::vector<long long>(525, 0) };
 
   lengths[1] = 1;
-
-  for (auto i{ 1 }; i < limit; i++)
-    collatzLength(i, lengths);
 
   auto longestChain   { 0LL };
   auto startingNumber { 0LL };
 
-  for (auto i{ 1 }; i < limit; i++)
-    if (lengths[i] > longestChain) {
-      longestChain   = lengths[i];
+  for (auto i{ 1 }; i < limit; i++) {
+    const auto length{ collatzLength(i, lengths) };
+
+    if (length > longestChain) {
+      longestChain   = length;
       startingNumber = i;
     }
+  }
 
   std::cout << startingNumber << std::endl;
 
