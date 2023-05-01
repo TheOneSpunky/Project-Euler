@@ -11,43 +11,57 @@
 #include <vector>
 #include <algorithm>
 
-auto multiply(const std::string& a, const std::string& b) -> std::string {
-  const auto aLength  { a.size() };
-  const auto bLength { b.size() };
+auto add(const std::string& a, const std::string& b) -> std::string {
+  const auto aLength{ static_cast<int>(a.size()) };
+  const auto bLength{ static_cast<int>(b.size()) };
 
-  auto result{ std::vector<int>(aLength + bLength, 0) };
+  auto result { std::string{} };
+  auto carry  { 0 };
+  auto sum    { 0 };
 
-  for (auto i{ static_cast<int>(aLength) - 1 }; i >= 0; i--)
-    for (auto j{ static_cast<int>(bLength) - 1 }; j >= 0; j--) {
-      const auto product{ (a[i] - '0') * (b[j] - '0') };
-      const auto tempSum{ result[i + j + 1] + product };
+  for (auto i{ 0 }; i < std::max(aLength, bLength); i++) {
+    sum = carry;
 
-      result[i + j + 1]  = tempSum % 10;
-      result[i + j]     += tempSum / 10;
-    }
+    if (i < aLength)
+      sum += a[aLength - 1 - i] - '0';
+    if (i < bLength)
+      sum += b[bLength - 1 - i] - '0';
 
-  auto resultStr{ std::string{} };
+    carry  = sum / 10;
+    sum   %= 10;
 
-  for (auto i{ 0 }; i < result.size(); ++i) {
-    if (i == 0 && result[i] == 0)
-      continue;
-
-    resultStr += std::to_string(result[i]);
+    result.insert(result.begin(), static_cast<char>(sum) + '0');
   }
 
-  return resultStr;
+  if (carry > 0)
+    result.insert(result.begin(), static_cast<char>(carry) + '0');
+
+  return result;
+}
+
+auto powerOfTwo(int exponent) -> std::string {
+  auto num  { std::string{"1"} };
+  auto base { std::string{"2"} };
+
+  while (exponent > 0) {
+    if (exponent % 2 == 1)
+      num = add(num, num);
+
+    base      = add(base, base);
+    exponent /= 2;
+  }
+
+  return num;
 }
 
 auto main() -> int {
   constexpr auto exponent{ 1000 };
 
-  auto num { std::string{"1"} };
   auto sum { 0 };
-
-  const auto two{ std::string{"2"} };
+  auto num { std::string{"1"} };
 
   for (auto i{ 0 }; i < exponent; i++)
-    num = multiply(num, two);
+    num = add(num, num);
 
   for (const auto& c : num)
     sum += c - '0';
