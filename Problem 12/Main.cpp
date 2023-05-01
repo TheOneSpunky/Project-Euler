@@ -21,48 +21,66 @@
  */
 
 #include <iostream>
+#include <vector>
 #include <cmath>
 
-auto count_divisors(int n) -> int {
-  auto divisors { 1 };
-  auto count    { 0 };
+auto sieve(int limit) -> std::vector<int> {
+  auto isPrime { std::vector<bool>(limit + 1, true) };
+  auto primes  { std::vector<int>{} };
 
-  // Count factors of 2
-  while (n % 2 == 0) {
-    n /= 2;
-    count++;
-  }
-  divisors *= (count + 1);
+  isPrime[0] = isPrime[1] = false;
 
-  // Count factors of odd numbers
-  for (auto i{ 3 }; i * i <= n; i += 2) {
-    count = 0;
+  for (auto p{ 2 }; p * p <= limit; p++)
+    if (isPrime[p]) {
+      primes.push_back(p);
 
-    while (n % i == 0) {
-      n /= i;
+      for (auto i{ p * p }; i <= limit; i += p)
+        isPrime[i] = false;
+    }
+
+  for (auto p{ static_cast<int>(std::sqrt(limit) + 1) }; p <= limit; p++)
+    if (isPrime[p])
+      primes.push_back(p);
+
+  return primes;
+}
+
+auto countDivisors(int n, const std::vector<int>& primes) -> int {
+  auto divisors{ 1 };
+
+  for (const auto& prime : primes) {
+    if (prime * prime > n)
+      break;
+
+    auto count{ 0 };
+
+    while (n % prime == 0) {
+      n /= prime;
       count++;
     }
     divisors *= (count + 1);
   }
 
-  // If n is a prime number greater than 2
-  if (n > 2)
+  if (n > 1)
     divisors *= 2;
 
   return divisors;
 }
 
 auto main() -> int {
-  constexpr auto t{ 500 };
+  constexpr auto t { 500 };
+  constexpr auto l { 100000 };
 
-  auto n { 1 };
-  auto p { 0 };
+  const auto primes{ sieve(l) };
+
+  auto n{ 1 };
+  auto p{ 0 };
 
   while (true) {
     if (n % 2 == 0)
-      p = count_divisors(n / 2) * count_divisors(n + 1);
+      p = countDivisors(n / 2, primes) * countDivisors(n + 1, primes);
     else
-      p = count_divisors(n) * count_divisors((n + 1) / 2);
+      p = countDivisors(n, primes) * countDivisors((n + 1) / 2, primes);
 
     if (p > t)
       break;
