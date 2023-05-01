@@ -25,8 +25,12 @@ auto multiply(const std::vector<int>& a, const std::vector<int>& b) -> std::vect
 }
 
 auto powerOfTwo(int exponent) -> std::vector<int> {
-  auto num  { std::vector<int>{1} };
+  const auto maxDigits{ 1 + static_cast<int>(1000 * std::log10(2)) };
+
+  auto num  { std::vector<int>(maxDigits, 0) };
   auto base { std::vector<int>{2} };
+
+  num.back() = 1;
 
   while (exponent > 0) {
     if (exponent % 2 == 1)
