@@ -7,26 +7,19 @@
  */
 
 #include <iostream>
-#include <vector>
 
-auto calculateRoutes(const int& n) -> long long {
-  auto grid{ std::vector<std::vector<long long>>(n + 1, std::vector<long long>(n + 1, 0)) };
-
-  for (auto i{ 0 }; i <= n; i++) {
-    grid[i][0] = 1;
-    grid[0][i] = 1;
-  }
+auto binomialCoefficient(const int& n) -> long long {
+  auto result{ 1LL };
 
   for (auto i{ 1 }; i <= n; i++)
-    for (int j{ 1 }; j <= n; j++)
-      grid[i][j] = grid[i - 1][j] + grid[i][j - 1];
+    result = result * (n + i) / i;
 
-  return grid[n][n];
+  return result;
 }
 
-auto main() -> int {
+int main() {
   constexpr auto n      { 20 };
-  const auto     routes { calculateRoutes(n) };
+  const auto     routes { binomialCoefficient(n) };
 
   std::cout << routes << std::endl;
 
