@@ -17,10 +17,11 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <execution>
 
-auto collatzLength(long long n, std::vector<long long>& lengths) -> long long {
-  const auto original { n };
-  auto       length   { 0LL };
+auto collatzLength(long long n) -> long long {
+  auto length{ 0LL };
 
   while (n != 1) {
     if ((n & 1) == 0)
@@ -29,36 +30,22 @@ auto collatzLength(long long n, std::vector<long long>& lengths) -> long long {
       n = 3 * n + 1;
 
     length++;
-
-    if (n < original && n < static_cast<long long>(lengths.size())) {
-      length += lengths[n];
-      break;
-    }
   }
-
-  if (original < static_cast<long long>(lengths.size()))
-    lengths[original] = length;
 
   return length;
 }
 
 auto main() -> int {
   constexpr auto limit   { 1000000 };
-  auto           lengths { std::vector<long long>(525, 0) };
+  auto           lengths { std::vector<long long>(limit) };
 
-  lengths[1] = 1;
+  std::for_each(std::execution::par_unseq, lengths.begin() + 1, lengths.end(),
+    [&lengths](long long& length) {
+      length = collatzLength(&length - &lengths[0]);
+    });
 
-  auto longestChain   { 0LL };
-  auto startingNumber { 0LL };
-
-  for (auto i{ 1 }; i < limit; i++) {
-    const auto length{ collatzLength(i, lengths) };
-
-    if (length > longestChain) {
-      longestChain   = length;
-      startingNumber = i;
-    }
-  }
+  const auto maxIter        { std::max_element(lengths.begin() + 1, lengths.end()) };
+  const auto startingNumber { std::distance(lengths.begin(), maxIter) };
 
   std::cout << startingNumber << std::endl;
 
