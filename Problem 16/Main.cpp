@@ -7,40 +7,26 @@
  */
 
 #include <iostream>
-#include <string>
 #include <vector>
-#include <algorithm>
 
-auto multiply(const std::string& a, const std::string& b) -> std::string {
-  const auto aLength { static_cast<int>(a.size()) };
-  const auto bLength { static_cast<int>(b.size()) };
+auto multiply(const std::vector<int>& a, const std::vector<int>& b) -> std::vector<int> {
+  auto result{ std::vector<int>(a.size() + b.size(), 0) };
 
-  auto result{ std::vector<int>(aLength + bLength, 0) };
+  for (auto i{ 0ULL }; i < a.size(); i++)
+    for (auto j{ 0ULL }; j < b.size(); j++)
+      result[i + j + 1] += a[i] * b[j];
 
-  for (auto i{ aLength - 1 }; i >= 0; i--)
-    for (auto j{ bLength - 1 }; j >= 0; j--) {
-      const auto product { (a[i] - '0') * (b[j] - '0') };
-      const auto tempSum { result[i + j + 1] + product };
-
-      result[i + j + 1]  = tempSum % 10;
-      result[i + j]     += tempSum / 10;
-    }
-
-  auto resultStr{ std::string{} };
-
-  for (auto i{ 0 }; i < result.size(); i++) {
-    if (i == 0 && result[i] == 0)
-      continue;
-
-    resultStr += std::to_string(result[i]);
+  for (auto i{ result.size() - 1 }; i > 0; i--) {
+    result[i - 1] += result[i] / 10;
+    result[i]     %= 10;
   }
 
-  return resultStr;
+  return result;
 }
 
-auto powerOfTwo(int exponent) -> std::string {
-  auto num  { std::string{"1"} };
-  auto base { std::string{"2"} };
+auto powerOfTwo(int exponent) -> std::vector<int> {
+  auto num  { std::vector<int>{1} };
+  auto base { std::vector<int>{2} };
 
   while (exponent > 0) {
     if (exponent % 2 == 1)
@@ -54,13 +40,13 @@ auto powerOfTwo(int exponent) -> std::string {
 }
 
 auto main() -> int {
-  constexpr auto exponent{ 1000 };
+  constexpr auto exponent { 1000 };
+  const auto     num      { powerOfTwo(exponent) };
 
-  auto sum { 0 };
-  auto num { powerOfTwo(exponent) };
+  auto sum{ 0 };
 
-  for (const char& c : num)
-    sum += c - '0';
+  for (const auto& digit : num)
+    sum += digit;
 
   std::cout << sum << std::endl;
 
