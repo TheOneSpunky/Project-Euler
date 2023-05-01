@@ -22,64 +22,49 @@
 
 #include <iostream>
 #include <cmath>
-#include <vector>
 
-auto primeFactors(int n) -> std::vector<int> {
-  auto factors  { std::vector<int>{} };
-  auto exponent { 0 };
-
-  const auto oddLimit{ std::sqrt(n) };
+auto count_divisors(int n) -> int {
+  auto divisors { 1 };
+  auto count    { 0 };
 
   // Count factors of 2
   while (n % 2 == 0) {
     n /= 2;
-    exponent++;
+    count++;
   }
-  if (exponent > 0)
-    factors.push_back(exponent);
+  divisors *= (count + 1);
 
   // Count factors of odd numbers
-  for (auto i{ 3 }; i <= oddLimit; i += 2) {
-    exponent = 0;
+  for (auto i{ 3 }; i * i <= n; i += 2) {
+    count = 0;
 
     while (n % i == 0) {
       n /= i;
-      exponent++;
+      count++;
     }
-    if (exponent > 0)
-      factors.push_back(exponent);
+    divisors *= (count + 1);
   }
 
   // If n is a prime number greater than 2
   if (n > 2)
-    factors.push_back(1);
-
-  return factors;
-}
-
-auto countDivisors(const int& n) -> int {
-  auto factors  { primeFactors(n) };
-  auto divisors { 1 };
-
-  for (const auto& factor : factors)
-    divisors *= (factor + 1);
+    divisors *= 2;
 
   return divisors;
 }
 
 auto main() -> int {
-  constexpr auto target{ 500 };
+  constexpr auto t{ 500 };
 
-  auto n       { 1 };
-  auto product { 0 };
+  auto n { 1 };
+  auto p { 0 };
 
   while (true) {
     if (n % 2 == 0)
-      product = countDivisors(n / 2) * countDivisors(n + 1);
+      p = count_divisors(n / 2) * count_divisors(n + 1);
     else
-      product = countDivisors(n) * countDivisors((n + 1) / 2);
+      p = count_divisors(n) * count_divisors((n + 1) / 2);
 
-    if (product > target)
+    if (p > t)
       break;
 
     n++;
