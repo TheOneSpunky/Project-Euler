@@ -73,18 +73,19 @@ auto main() -> int {
 
   const auto primes{ sieve(l) };
 
-  auto n{ 1 };
-  auto p{ 0 };
+  auto n    { 1 };
+  auto p    { 0 };
+  auto prev { 1 };
 
   while (true) {
-    if (n % 2 == 0)
-      p = countDivisors(n / 2, primes) * countDivisors(n + 1, primes);
-    else
-      p = countDivisors(n, primes) * countDivisors((n + 1) / 2, primes);
+    const auto currentDivisors{ countDivisors(n % 2 == 0 ? n + 1 : (n + 1) / 2, primes) };
+
+    p = prev * currentDivisors;
 
     if (p > t)
       break;
 
+    prev = currentDivisors;
     n++;
   }
 
