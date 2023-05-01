@@ -22,35 +22,70 @@
 
 #include <iostream>
 #include <cmath>
+#include <vector>
 
-auto count_divisors(const int& n) -> int {
-  const auto sqrtn { std::sqrt(n) };
-  auto       count { 0 };
+auto primeFactors(int n) -> std::vector<int> {
+  auto factors  { std::vector<int>{} };
+  auto exponent { 0 };
 
-  for (auto i{ 1 }; i <= sqrtn; i++)
-    if (n % i == 0) {
-      // If divisors are equal, count only one
-      if (n / i == i)
-        count++;
-      else
-        count += 2;
+  const auto oddLimit{ std::sqrt(n) };
+
+  // Count factors of 2
+  while (n % 2 == 0) {
+    n /= 2;
+    exponent++;
+  }
+  if (exponent > 0)
+    factors.push_back(exponent);
+
+  // Count factors of odd numbers
+  for (auto i{ 3 }; i <= oddLimit; i += 2) {
+    exponent = 0;
+
+    while (n % i == 0) {
+      n /= i;
+      exponent++;
     }
+    if (exponent > 0)
+      factors.push_back(exponent);
+  }
 
-  return count;
+  // If n is a prime number greater than 2
+  if (n > 2)
+    factors.push_back(1);
+
+  return factors;
+}
+
+auto countDivisors(const int& n) -> int {
+  auto factors  { primeFactors(n) };
+  auto divisors { 1 };
+
+  for (const auto& factor : factors)
+    divisors *= (factor + 1);
+
+  return divisors;
 }
 
 auto main() -> int {
   constexpr auto target{ 500 };
 
-  auto n        { 1 };
-  auto triangle { 0 };
-  auto divisors { 0 };
+  auto n       { 1 };
+  auto product { 0 };
 
-  while (divisors <= target) {
-    triangle += n;
-    divisors  = count_divisors(triangle);
+  while (true) {
+    if (n % 2 == 0)
+      product = countDivisors(n / 2) * countDivisors(n + 1);
+    else
+      product = countDivisors(n) * countDivisors((n + 1) / 2);
+
+    if (product > target)
+      break;
+
     n++;
   }
+
+  const auto triangle{ n * (n + 1) / 2 };
 
   std::cout << triangle << std::endl;
 
