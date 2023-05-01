@@ -11,37 +11,55 @@
 #include <vector>
 #include <algorithm>
 
-auto multiplyByTwo(const std::string& num) -> std::string {
-  const auto numLength{ static_cast<int>(num.size()) };
+auto multiply(const std::string& a, const std::string& b) -> std::string {
+  const auto aLength { static_cast<int>(a.size()) };
+  const auto bLength { static_cast<int>(b.size()) };
 
-  auto result  { std::string{} };
-  auto carry   { 0 };
-  auto product { 0 };
+  auto result{ std::vector<int>(aLength + bLength, 0) };
 
-  for (auto i{ numLength - 1 }; i >= 0; i--) {
-    product  = (num[i] - '0') * 2 + carry;
-    carry    = product / 10;
-    product %= 10;
+  for (auto i{ aLength - 1 }; i >= 0; i--)
+    for (auto j{ bLength - 1 }; j >= 0; j--) {
+      const auto product { (a[i] - '0') * (b[j] - '0') };
+      const auto tempSum { result[i + j + 1] + product };
 
-    result.insert(result.begin(), static_cast<char>(product) + '0');
+      result[i + j + 1]  = tempSum % 10;
+      result[i + j]     += tempSum / 10;
+    }
+
+  auto resultStr{ std::string{} };
+
+  for (auto i{ 0 }; i < result.size(); i++) {
+    if (i == 0 && result[i] == 0)
+      continue;
+
+    resultStr += std::to_string(result[i]);
   }
 
-  if (carry > 0)
-    result.insert(result.begin(), static_cast<char>(carry) + '0');
+  return resultStr;
+}
 
-  return result;
+auto powerOfTwo(int exponent) -> std::string {
+  auto num  { std::string{"1"} };
+  auto base { std::string{"2"} };
+
+  while (exponent > 0) {
+    if (exponent % 2 == 1)
+      num = multiply(num, base);
+
+    base      = multiply(base, base);
+    exponent /= 2;
+  }
+
+  return num;
 }
 
 auto main() -> int {
   constexpr auto exponent{ 1000 };
 
   auto sum { 0 };
-  auto num { std::string{"1"} };
+  auto num { powerOfTwo(exponent) };
 
-  for (auto i{ 0 }; i < exponent; i++)
-    num = multiplyByTwo(num);
-
-  for (const auto& c : num)
+  for (const char& c : num)
     sum += c - '0';
 
   std::cout << sum << std::endl;
