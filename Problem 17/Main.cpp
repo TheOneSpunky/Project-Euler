@@ -9,65 +9,46 @@
  */
 
 #include <iostream>
-#include <map>
-#include <string>
+#include <array>
 
-auto numberToWords(int num, const std::map<int, std::string>& wordMap) {
-  auto result{ std::string{} };
+constexpr auto lettersInNumber(int num) -> int {
+  constexpr auto letterCount     { std::array<int, 20>{0, 3, 3, 5, 4, 4, 3, 5, 5, 4, 3, 6, 6, 8, 8, 7, 7, 9, 8, 8} };
+  constexpr auto letterCountTens { std::array<int, 10>{0, 0, 6, 6, 5, 5, 5, 7, 6, 6} };
+
+  auto count{ 0 };
 
   if (num >= 1000) {
-    result += wordMap.at(num / 1000) + " " + wordMap.at(1000);
-    num    %= 1000;
+    count += letterCount[num / 1000] + 8; // 8 for "thousand"
+    num %= 1000;
   }
 
   if (num >= 100) {
-    result += wordMap.at(num / 100) + " " + wordMap.at(100);
-    num    %= 100;
+    count += letterCount[num / 100] + 7; // 7 for "hundred"
+    num %= 100;
 
     if (num > 0)
-      result += " and ";
+      count += 3; // 3 for "and"
   }
 
   if (num >= 20) {
-    result += wordMap.at(num - (num % 10));
-    num    %= 10;
-
-    if (num > 0)
-      result += "-";
+    count += letterCountTens[num / 10];
+    num %= 10;
   }
 
-  if (num > 0)
-    result += wordMap.at(num);
+  count += letterCount[num];
 
-  return result;
+  return count;
 }
 
 auto main() -> int {
-  constexpr auto maxNum  { 1000 };
-  const auto     wordMap {
-    std::map<int, std::string> {
-      {1, "one"},       {2, "two"},        {3, "three"},     {4, "four"},      {5, "five"},
-      {6, "six"},       {7, "seven"},      {8, "eight"},     {9, "nine"},      {10, "ten"},
-      {11, "eleven"},   {12, "twelve"},    {13, "thirteen"}, {14, "fourteen"}, {15, "fifteen"},
-      {16, "sixteen"},  {17, "seventeen"}, {18, "eighteen"}, {19, "nineteen"},
-      {20, "twenty"},   {30, "thirty"},    {40, "forty"},    {50, "fifty"},
-      {60, "sixty"},    {70, "seventy"},   {80, "eighty"},   {90, "ninety"},
-      {100, "hundred"}, {1000, "thousand"}
-    }
-  };
+  constexpr auto max{ 1000 };
 
-  auto letterCount{ 0 };
+  auto totalCount{ 0 };
 
-  for (auto i{ 1 }; i <= maxNum; i++) {
-    auto words{ numberToWords(i, wordMap) };
+  for (auto i{ 1 }; i <= max; i++)
+    totalCount += lettersInNumber(i);
 
-    words.erase(std::remove(words.begin(), words.end(), ' '), words.end());
-    words.erase(std::remove(words.begin(), words.end(), '-'), words.end());
-
-    letterCount += static_cast<int>(words.length());
-  }
-
-  std::cout << letterCount << std::endl;
+  std::cout << totalCount << std::endl;
 
   return 0;
 }
