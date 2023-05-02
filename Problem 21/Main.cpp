@@ -14,13 +14,18 @@
 #include <cmath>
 
 auto properDivisorSums(const int& limit) -> std::vector<int> {
-  auto sums{ std::vector<int>(limit, 1) };
+  const auto sqrtLimit { std::sqrt(limit) };
+  auto       sums      { std::vector<int>(limit, 1) };
 
   sums[0] = 0;
 
-  for (auto i{ 2 }; i <= limit / 2; i++)
-    for (auto j{ i * 2 }; j < limit; j += i)
+  for (auto i{ 2 }; i <= sqrtLimit; i++)
+    for (int j = i * i; j < limit; j += i) {
       sums[j] += i;
+
+      if (i != j / i)
+        sums[j] += j / i;
+    }
 
   return sums;
 }
