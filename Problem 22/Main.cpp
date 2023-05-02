@@ -29,16 +29,20 @@ auto main() -> int {
   auto file  { std::ifstream{"names.txt"} };
   auto name  { std::string{} };
   auto names { std::vector<std::string>{} };
+  names.reserve(5000);
 
   while (std::getline(file, name, ','))
     names.push_back(name.substr(1, name.size() - 2)); // Remove quotes
 
   std::sort(names.begin(), names.end());
 
-  auto score{ 0ULL };
+  auto score { 0ULL };
+  auto index { 0ULL };
 
-  for (auto i{ 0ULL }; i < names.size(); i++)
-    score += (i + 1) * nameValue(names[i]);
+  score = std::transform_reduce(names.begin(), names.end(), 0ULL, std::plus<>(),
+    [&](const std::string& name) {
+      return ++index * nameValue(name);
+    });
 
   std::cout << score << std::endl;
 
