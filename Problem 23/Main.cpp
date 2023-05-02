@@ -10,57 +10,52 @@
  * Find the sum of all the positive integers which cannot be written as the sum of two abundant numbers.
  */
 
-// A: 4179871
-
 #include <iostream>
 #include <vector>
-#include <unordered_set>
 
-auto properDivisors(const int& n) -> std::vector<int> {
-  auto divisors{ std::vector<int>{} };
+auto sumProperDivisors(const int& n) -> int {
+  auto sum{ 1 };
 
-  for (auto i{ 1 }; i <= n / 2; i++)
-    if (n % i == 0)
-      divisors.push_back(i);
+  for (auto i{ 2 }; i * i <= n; i++)
+    if (n % i == 0) {
+      sum += i;
 
-  return divisors;
+      if (i != n / i)
+        sum += n / i;
+    }
+
+  return sum;
 }
 
 auto isAbundant(const int& n) -> bool {
-  auto divisors { properDivisors(n) };
-  auto sum      { 0 };
-
-  for (const int& divisor : divisors)
-    sum += divisor;
-
-  return sum > n;
+  return sumProperDivisors(n) > n;
 }
 
 auto main() -> int {
   constexpr auto limit{ 28123 };
 
   auto abundantNumbers { std::vector<int>{} };
-  auto abundantSums    { std::unordered_set<int>{} };
+  auto abundantSums    { std::vector<bool>(limit + 1, false) };
 
   for (auto i{ 1 }; i <= limit; i++)
-    if (isAbundant(i))
+    if (isAbundant(i)) {
       abundantNumbers.push_back(i);
 
-  for (auto i{ 0ULL }; i < abundantNumbers.size(); i++)
-    for (auto j{ i }; j < abundantNumbers.size(); j++) {
-      const auto abundantSum{ abundantNumbers[i] + abundantNumbers[j] };
+      for (const auto& abundantNumber : abundantNumbers) {
+        const auto abundantSum{ abundantNumber + i };
 
-      if (abundantSum <= limit)
-        abundantSums.insert(abundantSum);
+        if (abundantSum <= limit)
+          abundantSums[abundantSum] = true;
+      }
     }
 
-  auto sum{ 0 };
+  auto sumOfNonAbundantSums{ 0 };
 
   for (auto i{ 1 }; i <= limit; i++)
-    if (abundantSums.find(i) == abundantSums.end())
-      sum += i;
+    if (!abundantSums[i])
+      sumOfNonAbundantSums += i;
 
-  std::cout << "Sum of all positive integers which cannot be written as the sum of two abundant numbers: " << sum << std::endl;
+  std::cout << sumOfNonAbundantSums << std::endl;
 
   return 0;
 }
