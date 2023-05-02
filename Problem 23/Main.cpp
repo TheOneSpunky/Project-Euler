@@ -27,7 +27,7 @@ auto sumProperDivisors(const int& n) -> int {
   return sum;
 }
 
-auto isAbundant(const int& n) -> bool {
+static inline auto isAbundant(const int& n) -> bool {
   return sumProperDivisors(n) > n;
 }
 
