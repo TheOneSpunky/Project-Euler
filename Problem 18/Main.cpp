@@ -34,10 +34,30 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <string>
+#include <string_view>
+
+auto parse(std::string_view str) -> std::vector<std::vector<int>> {
+  auto triangle { std::vector<std::vector<int>>{} };
+  auto stream   { std::stringstream{std::string{str}} };
+  auto line     { std::string{} };
+
+  while (std::getline(stream, line)) {
+    auto row       { std::vector<int>{} };
+    auto rowStream { std::stringstream{line} };
+    auto num       { 0 };
+
+    while (rowStream >> num)
+      row.push_back(num);
+    triangle.push_back(row);
+  }
+
+  return triangle;
+}
 
 auto main() -> int {
-  auto triangleStr {
-    std::string {
+  constexpr auto triangleStr {
+    std::string_view {
       "75\n"
       "95 64\n"
       "17 47 82\n"
@@ -56,19 +76,7 @@ auto main() -> int {
     }
   };
 
-  auto triangle       { std::vector<std::vector<int>>{} };
-  auto triangleStream { std::stringstream{triangleStr} };
-  auto num            { 0 };
-  auto line           { std::string{} };
-
-  while (std::getline(triangleStream, line)) {
-    auto row       { std::vector<int>{} };
-    auto rowStream { std::stringstream{line} };
-
-    while (rowStream >> num)
-      row.push_back(num);
-    triangle.push_back(row);
-  }
+  auto triangle{ parse(triangleStr) };
 
   for (auto row{ static_cast<int>(triangle.size()) - 2 }; row >= 0; row--)
     for (auto col{ 0 }; col < triangle[row].size(); col++)
