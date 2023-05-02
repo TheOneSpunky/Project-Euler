@@ -10,10 +10,10 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
+#include <array>
 
-auto precomputeFactorials(const int& n) -> std::vector<int> {
-  auto factorials{ std::vector<int>(n + 1) };
+auto precomputeFactorials(const int& n) -> std::array<int, 10> {
+  auto factorials{ std::array<int, 10>{} };
 
   factorials[0] = 1;
 
