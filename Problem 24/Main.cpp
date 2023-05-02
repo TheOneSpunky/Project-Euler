@@ -8,23 +8,42 @@
  * What is the millionth lexicographic permutation of the digits 0, 1, 2, 3, 4, 5, 6, 7, 8 and 9?
  */
 
-#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
 
-auto main() -> int {
+auto factorial(const int& n) -> int {
+  auto result{ 1 };
+
+  for (auto i{ 1 }; i <= n; i++)
+    result *= i;
+
+  return result;
+}
+
+int main() {
   constexpr auto target{ 1000000 };
 
-  auto digits  { std::string{"0123456789"} };
-  auto current { 1 };
+  auto digits    { std::string{"0123456789"} };
+  auto result    { std::string{} };
+  auto remaining { target - 1 };
 
-  while (current < target) {
-    std::next_permutation(digits.begin(), digits.end());
-    current++;
+  for (auto i{ static_cast<int>(digits.size()) - 1 }; i > 0; i--) {
+    const auto fact  { factorial(i) };
+    const auto index { remaining / fact };
+
+    remaining %= fact;
+    result    += digits[index];
+
+    digits.erase(digits.begin() + index);
+
+    if (remaining == 0)
+      break;
   }
 
-  std::cout << digits << std::endl;
+  result += digits;
+
+  std::cout << result << std::endl;
 
   return 0;
 }
