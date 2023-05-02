@@ -12,27 +12,29 @@
 #include <string>
 #include <vector>
 
-auto factorial(const int& n) -> int {
-  auto result{ 1 };
+auto precomputeFactorials(const int& n) -> std::vector<int> {
+  auto factorials{ std::vector<int>(n + 1) };
+
+  factorials[0] = 1;
 
   for (auto i{ 1 }; i <= n; i++)
-    result *= i;
+    factorials[i] = factorials[i - 1] * i;
 
-  return result;
+  return factorials;
 }
 
-int main() {
-  constexpr auto target{ 1000000 };
+auto main() -> int {
+  constexpr auto target     { 1000000 };
+  const auto     factorials { precomputeFactorials(9) };
 
-  auto digits    { std::string{"0123456789"} };
+  auto digits    { std::string{ "0123456789" } };
   auto result    { std::string{} };
   auto remaining { target - 1 };
 
   for (auto i{ static_cast<int>(digits.size()) - 1 }; i > 0; i--) {
-    const auto fact  { factorial(i) };
-    const auto index { remaining / fact };
+    const auto index{ remaining / factorials[i] };
 
-    remaining %= fact;
+    remaining %= factorials[i];
     result    += digits[index];
 
     digits.erase(digits.begin() + index);
