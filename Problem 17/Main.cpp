@@ -40,13 +40,22 @@ constexpr auto lettersInNumber(int num) -> int {
   return count;
 }
 
+constexpr auto precomputeLetterCounts() -> std::array<int, 1001> {
+  auto letterCounts{ std::array<int, 1001>{} };
+
+  for (auto i{ 1 }; i <= 1000; i++)
+    letterCounts[i] = lettersInNumber(i);
+
+  return letterCounts;
+}
+
 auto main() -> int {
-  constexpr auto max{ 1000 };
+  constexpr auto letterCounts{ precomputeLetterCounts() };
 
   auto totalCount{ 0 };
 
-  for (auto i{ 1 }; i <= max; i++)
-    totalCount += lettersInNumber(i);
+  for (auto i{ 1 }; i <= 1000; i++)
+    totalCount += letterCounts[i];
 
   std::cout << totalCount << std::endl;
 
