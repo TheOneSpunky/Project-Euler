@@ -10,37 +10,31 @@
  */
 
 #include <iostream>
-#include <unordered_map>
+#include <vector>
 #include <cmath>
 
-auto sumProperDivisors(const int& num, std::unordered_map<int, int>& memo) -> int {
-  if (memo.find(num) != memo.end())
-    return memo[num];
+auto properDivisorSums(const int& limit) -> std::vector<int> {
+  auto sums{ std::vector<int>(limit, 1) };
 
-  const auto sqrtNum { std::sqrt(num) };
-  auto       sum     { 1 };
+  sums[0] = 0;
 
-  for (auto i{ 2 }; i <= sqrtNum; i++)
-    if (num % i == 0) {
-      sum += i;
+  for (auto i{ 2 }; i <= limit / 2; i++)
+    for (auto j{ i * 2 }; j < limit; j += i)
+      sums[j] += i;
 
-      if (i != num / i)
-        sum += num / i;
-    }
-
-  memo[num] = sum;
-
-  return sum;
+  return sums;
 }
 
 auto main() -> int {
+  constexpr auto limit{ 10000 };
+
+  auto sums { properDivisorSums(limit) };
   auto sum  { 0 };
-  auto memo { std::unordered_map<int, int>{} };
 
-  for (auto a{ 2 }; a < 10000; a++) {
-    const auto b{ sumProperDivisors(a, memo) };
+  for (auto a{ 2 }; a < limit; a++) {
+    const auto b{ sums[a] };
 
-    if (a != b && a == sumProperDivisors(b, memo))
+    if (b < limit && a != b && a == sums[b])
       sum += a;
   }
 
