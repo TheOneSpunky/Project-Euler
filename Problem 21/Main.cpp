@@ -10,9 +10,13 @@
  */
 
 #include <iostream>
+#include <unordered_map>
 #include <cmath>
 
-auto sumProperDivisors(const int& num) -> int {
+auto sumProperDivisors(const int& num, std::unordered_map<int, int>& memo) -> int {
+  if (memo.find(num) != memo.end())
+    return memo[num];
+
   const auto sqrtNum { std::sqrt(num) };
   auto       sum     { 1 };
 
@@ -24,16 +28,19 @@ auto sumProperDivisors(const int& num) -> int {
         sum += num / i;
     }
 
+  memo[num] = sum;
+
   return sum;
 }
 
 auto main() -> int {
-  auto sum{ 0 };
+  auto sum  { 0 };
+  auto memo { std::unordered_map<int, int>{} };
 
   for (auto a{ 2 }; a < 10000; a++) {
-    const auto b{ sumProperDivisors(a) };
+    const auto b{ sumProperDivisors(a, memo) };
 
-    if (a != b && a == sumProperDivisors(b))
+    if (a != b && a == sumProperDivisors(b, memo))
       sum += a;
   }
 
