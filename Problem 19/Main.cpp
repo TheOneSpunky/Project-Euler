@@ -13,28 +13,25 @@
 #include <iostream>
 #include <array>
 
-auto isLeapYear(const int& year) -> bool {
-  if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0))
-    return true;
+constexpr auto zeller(int year, int month) -> int {
+  if (month < 3) {
+    month += 12;
+    year--;
+  }
 
-  return false;
+  const auto k { year % 100 };
+  const auto j { year / 100 };
+
+  return (13 * (month + 1) + k + k / 4 + 5 * j + j / 4) % 7;
 }
 
 auto main() -> int {
-  constexpr auto days{ std::array<int, 12>{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31} };
+  auto sundays{ 0 };
 
-  auto day     { 1 }; // January 1, 1900 was a Monday (1).
-  auto sundays { 0 };
-
-  // Iterate from 1901 to 2000.
   for (auto year{ 1901 }; year <= 2000; year++)
-    for (auto month{ 0 }; month < 12; month++) {
-      // Add the number of days in the previous month, accounting for leap years.
-      day += days[(month - 1 + 12) % 12] + (month == 2 && isLeapYear(year - 1));
-
-      if (day % 7 == 0)
+    for (auto month{ 1 }; month <= 12; month++)
+      if (zeller(year, month) == 0)
         sundays++;
-    }
 
   std::cout << sundays << std::endl;
 
