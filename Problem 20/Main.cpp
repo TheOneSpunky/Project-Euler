@@ -11,20 +11,77 @@
 
 #include <iostream>
 #include <vector>
+#include <numbers>
 #include <numeric>
-#include <string>
+#include <complex>
+
+auto fft(std::vector<std::complex<double>>& a, const bool invert) -> void {
+  const auto n{ a.size() };
+
+  if (n == 1)
+    return;
+
+  const auto limit { n / 2 };
+  auto       a0    { std::vector<std::complex<double>>(limit) };
+  auto       a1    { std::vector<std::complex<double>>(limit) };
+
+  for (auto i{ 0 }; i < limit; i++) {
+    a0[i] = a[i * 2];
+    a1[i] = a[i * 2 + 1];
+  }
+
+  fft(a0, invert);
+  fft(a1, invert);
+
+  auto ang { 2 * std::numbers::pi_v<double> / n * (invert ? -1 : 1) };
+  auto w   { std::complex<double>(1) };
+  auto wn  { std::complex<double>(std::cos(ang), std::sin(ang)) };
+
+  for (auto i{ 0 }; i < limit; i++) {
+    a[i]         = a0[i] + w * a1[i];
+    a[i + n / 2] = a0[i] - w * a1[i];
+
+    if (invert) {
+      a[i]         /= 2;
+      a[i + n / 2] /= 2;
+    }
+
+    w *= wn;
+  }
+}
 
 auto multiply(const std::vector<int>& num1, const std::vector<int>& num2) -> std::vector<int> {
-  auto result{ std::vector<int>(num1.size() + num2.size(), 0) };
+  auto a { std::vector<std::complex<double>>(num1.begin(), num1.end()) };
+  auto b { std::vector<std::complex<double>>(num2.begin(), num2.end()) };
+  auto n { 1 };
 
-  for (auto i{ 0ULL }; i < num1.size(); i++)
-    for (auto j{ 0ULL }; j < num2.size(); j++) {
-      const auto index{ i + j };
+  auto limit{ num1.size() + num2.size() };
 
-      result[index]     += num1[i] * num2[j];
-      result[index + 1] += result[i + j] / 10;
-      result[index]     %= 10;
-    }
+  while (n < limit)
+    n *= 2;
+
+  a.resize(n);
+  b.resize(n);
+
+  fft(a, false);
+  fft(b, false);
+
+  for (auto i{ 0 }; i < n; ++i)
+    a[i] *= b[i];
+
+  fft(a, true);
+
+  auto result{ std::vector<int>(n) };
+
+  for (auto i{ 0 }; i < n; i++)
+    result[i] = static_cast<int>(std::round(a[i].real()));
+
+  limit = n - 1;
+
+  for (auto i{ 0 }; i < limit; i++) {
+    result[i + 1] += result[i] / 10;
+    result[i]     %= 10;
+  }
 
   while (result.back() == 0 && result.size() > 1)
     result.pop_back();
@@ -52,7 +109,7 @@ auto main() -> int {
   const auto     fact { factorial(n) };
   const auto     sum  { std::accumulate(fact.begin(), fact.end(), 0) };
 
-  std::cout << "The sum of the digits in the number 100! is: " << sum << std::endl;
+  std::cout << sum << std::endl;
 
   return 0;
 }
