@@ -44,8 +44,10 @@ auto main() -> int {
       for (const auto& abundantNumber : abundantNumbers) {
         const auto abundantSum{ abundantNumber + i };
 
-        if (abundantSum <= limit)
-          abundantSums[abundantSum] = true;
+        if (abundantSum > limit)
+          break;
+
+        abundantSums[abundantSum] = true;
       }
     }
 
