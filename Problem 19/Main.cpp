@@ -26,17 +26,14 @@ auto main() -> int {
   auto day     { 1 }; // January 1, 1900 was a Monday (1).
   auto sundays { 0 };
 
-  // Iterate from 1900 to 2000.
-  for (auto year{ 1900 }; year <= 2000; year++)
+  // Iterate from 1901 to 2000.
+  for (auto year{ 1901 }; year <= 2000; year++)
     for (auto month{ 0 }; month < 12; month++) {
-      if (year > 1900 && day % 7 == 0)
+      // Add the number of days in the previous month, accounting for leap years.
+      day += days[(month - 1 + 12) % 12] + (month == 2 && isLeapYear(year - 1));
+
+      if (day % 7 == 0)
         sundays++;
-
-      day += days[month];
-
-      // Adjust for leap years in February.
-      if (month == 1 && isLeapYear(year))
-        day++;
     }
 
   std::cout << sundays << std::endl;
