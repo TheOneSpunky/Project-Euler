@@ -1,54 +1,36 @@
 /**
  * Project Euler Problem 25: 1000-digit Fibonacci number
+ * 
+ * The Fibonacci sequence is defined by the recurrence relation:
+ *
+ * Fn = Fn-1 + Fn-2, where F1 = 1 and F2 = 1.
+ * Hence the first 12 terms will be:
+ *
+ * F1  = 1
+ * F2  = 1
+ * F3  = 2
+ * F4  = 3
+ * F5  = 5
+ * F6  = 8
+ * F7  = 13
+ * F8  = 21
+ * F9  = 34
+ * F10 = 55
+ * F11 = 89
+ * F12 = 144
+ * The 12th term, F12, is the first term to contain three digits.
+ *
+ * What is the index of the first term in the Fibonacci sequence to contain 1000 digits?
  */
 
 #include <iostream>
-#include <string>
-#include <algorithm>
+#include <cmath>
 
-auto addStrings(const std::string& num1, const std::string& num2) -> std::string {
-  auto result { std::string{} };
-  auto carry  { 0 };
-  auto p1     { static_cast<int>(num1.size()) - 1 };
-  auto p2     { static_cast<int>(num2.size()) - 1 };
-
-  while (p1 >= 0 || p2 >= 0) {
-    auto x1      { p1 >= 0 ? num1[p1] - '0' : 0 };
-    auto x2      { p2 >= 0 ? num2[p2] - '0' : 0 };
-    auto tempSum { x1 + x2 + carry };
-
-    carry = tempSum / 10;
-
-    result.push_back(tempSum % 10 + '0');
-
-    p1--;
-    p2--;
-  }
-
-  if (carry)
-    result.push_back(static_cast<char>(carry) + '0');
-
-  std::reverse(result.begin(), result.end());
-
-  return result;
-}
-
-auto main() -> int {
-  auto prev1   { std::string{"1"} };
-  auto prev2   { std::string{"1"} };
-  auto current { std::string{} };
-  auto index   { 2 };
-
-  while (true) {
-    current = addStrings(prev1, prev2);
-    index++;
-
-    if (current.length() >= 1000)
-      break;
-
-    prev2 = prev1;
-    prev1 = current;
-  }
+int main() {
+  const auto phi    { (1.0 + std::sqrt(5.0)) / 2.0 };
+  const auto lphi   { std::log10(phi) };
+  const auto lsqrt5 { std::log10(std::sqrt(5.0)) / 2.0 };
+  const auto index  { std::ceil((1000.0 - 1.0 + lsqrt5) / lphi) };
 
   std::cout << index << std::endl;
 
