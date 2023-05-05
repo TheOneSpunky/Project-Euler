@@ -18,31 +18,53 @@
  */
 
 #include <iostream>
+#include <vector>
 
-auto cycleLength(const int& p) -> int {
-  if (p % 2 == 0 || p % 5 == 0)
-    return 0;
+auto isPrime(const int& n) -> bool {
+  if (n <= 1)
+    return false;
+  else if (n <= 3)
+    return true;
+  else if (n % 2 == 0 || n % 3 == 0)
+    return false;
 
-  auto k   { 1 };
-  auto mod { 1 };
+  for (auto i{ 5 }; i * i <= n; i += 6)
+    if (n % i == 0 || n % (i + 2) == 0)
+      return false;
 
-  do {
-    mod = (mod * 10) % p;
-    k++;
-  } while (mod != 1);
+  return true;
+}
 
-  return k - 1;
+auto modularPow(int base, int exponent, int modulus) -> int {
+  auto result{ 1 };
+
+  base %= modulus;
+
+  while (exponent > 0) {
+    if (exponent % 2 == 1)
+      result = (result * base) % modulus;
+
+    exponent >>= 1;
+    base       = (base * base) % modulus;
+  }
+
+  return result;
 }
 
 auto main() -> int {
-  auto maxLength { 0 };
   auto maxd      { 0 };
+  auto maxLength { 0 };
 
-  for (auto d{ 2 }; d < 1000; d++) {
-    const auto currentLength{ cycleLength(d) };
+  for (auto d{ 7 }; d < 1000; d += 2) {
+    if (d % 5 == 0 || !isPrime(d))
+      continue;
 
-    if (currentLength > maxLength) {
-      maxLength = currentLength;
+    auto order{ 1 };
+
+    while (modularPow(10, order, d) != 1)
+      order++;
+    if (order > maxLength) {
+      maxLength = order;
       maxd      = d;
     }
   }
