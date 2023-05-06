@@ -20,53 +20,56 @@
 #include <iostream>
 #include <vector>
 
-auto isPrime(const int& n) -> bool {
-  if (n <= 1)
-    return false;
-  else if (n <= 3)
-    return true;
-  else if (n % 2 == 0 || n % 3 == 0)
-    return false;
+auto generatePrimes(const int& limit) -> std::vector<int> {
+  auto isPrime { std::vector<bool>(limit + 1, true) };
+  auto primes  { std::vector<int>{} };
 
-  for (auto i{ 5 }; i * i <= n; i += 6)
-    if (n % i == 0 || n % (i + 2) == 0)
-      return false;
+  for (auto i{ 2 }; i <= limit; i++)
+    if (isPrime[i]) {
+      primes.push_back(i);
 
-  return true;
+      for (auto j{ i * i }; j <= limit; j += i)
+        isPrime[j] = false;
+    }
+
+  return primes;
 }
 
-auto modularPow(int base, int exponent, int modulus) -> int {
-  auto result{ 1 };
+auto cycleLength(const int& d) -> int {
+  if (d % 2 == 0 || d % 5 == 0)
+    return 0;
 
-  base %= modulus;
+  auto k   { 1 };
+  auto mod { 10 % d };
 
-  while (exponent > 0) {
-    if (exponent % 2 == 1)
-      result = (result * base) % modulus;
-
-    exponent >>= 1;
-    base       = (base * base) % modulus;
+  while (mod != 1) {
+    mod = (mod * 10) % d;
+    k++;
   }
 
-  return result;
+  return k;
 }
 
 auto main() -> int {
-  auto maxd      { 0 };
-  auto maxLength { 0 };
+  auto primes         { generatePrimes(1000) };
+  auto maxd           { 0 };
+  auto maxCycleLength { 0 };
 
-  for (auto d{ 7 }; d < 1000; d += 2) {
-    if (d % 5 == 0 || !isPrime(d))
-      continue;
+  for (auto it{ primes.rbegin() }; it != primes.rend(); it++) {
+    const auto d{ *it };
 
-    auto order{ 1 };
+    if (d <= 5)
+      break;
 
-    while (modularPow(10, order, d) != 1)
-      order++;
-    if (order > maxLength) {
-      maxLength = order;
-      maxd      = d;
+    auto currentLength{ cycleLength(d) };
+
+    if (currentLength > maxCycleLength) {
+      maxCycleLength = currentLength;
+      maxd           = d;
     }
+
+    if (maxCycleLength == d - 1)
+      break;
   }
 
   std::cout << maxd << std::endl;
