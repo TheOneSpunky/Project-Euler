@@ -21,12 +21,13 @@
 
 #include <iostream>
 #include <cmath>
+#include <vector>
 
 auto isPrime(const int& n) {
   if (n <= 1)
     return false;
 
-  const auto limit{ static_cast<int>(std::sqrt(n)) };
+  const auto limit{ std::sqrt(n) };
 
   for (auto i{ 2 }; i <= limit; i++)
     if (n % i == 0)
@@ -35,22 +36,34 @@ auto isPrime(const int& n) {
   return true;
 }
 
+auto generatePrimes(const int& limit) -> std::vector<int> {
+  auto primes{ std::vector<int>{} };
+
+  for (auto i{ 2 }; i <= limit; i++)
+    if (isPrime(i))
+      primes.push_back(i);
+
+  return primes;
+}
+
 auto main() -> int {
+  const auto primes{ generatePrimes(1000) };
+
   auto maxPrimes { 0 };
   auto bestA     { 0 };
   auto bestB     { 0 };
 
-  for (auto a{ -999 }; a < 1000; a++) {
-    for (auto b{ -1000 }; b <= 1000; b++) {
+  for (auto a{ -999 }; a < 1000; a += 2) {
+    for (const auto& b : primes) {
       auto n{ 0 };
 
-      while (isPrime(n * n + a * n + b))
+      while (isPrime(std::abs(n * n + a * n + b)))
         n++;
 
       if (n > maxPrimes) {
         maxPrimes = n;
-        bestA     = a;
-        bestB     = b;
+        bestA = a;
+        bestB = b;
       }
     }
   }
