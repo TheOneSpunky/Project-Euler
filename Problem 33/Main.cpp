@@ -18,13 +18,7 @@ auto isCuriousFraction(int num, int den) -> bool {
   if (num % 10 == 0 && den % 10 == 0)
     return false; // Trivial example
 
-  auto commonDigit{ -1 };
-
-  for (auto i{ 1 }; i <= 9; i++)
-    if ((num / 10 == i || num % 10 == i) && (den / 10 == i || den % 10 == i)) {
-      commonDigit = i;
-      break;
-    }
+  const auto commonDigit{ (num % 10 == den / 10) ? num % 10 : (num / 10 == den % 10) ? num / 10 : -1 };
 
   if (commonDigit == -1)
     return false;
@@ -36,20 +30,15 @@ auto isCuriousFraction(int num, int den) -> bool {
 }
 
 auto main() -> int {
-  auto curiousFractions{ std::vector<std::pair<int, int>>{} };
-
-  for (auto num{ 10 }; num < 100; num++)
-    for (auto den{ num + 1 }; den < 100; den++)
-      if (isCuriousFraction(num, den))
-        curiousFractions.push_back({ num, den });
-
   auto productNum { 1 };
   auto productDen { 1 };
 
-  for (const auto& fraction : curiousFractions) {
-    productNum *= fraction.first;
-    productDen *= fraction.second;
-  }
+  for (auto num{ 10 }; num < 100; num++)
+    for (auto den{ num + 1 }; den < 100; den++)
+      if (isCuriousFraction(num, den)) {
+        productNum *= num;
+        productDen *= den;
+      }
 
   const auto gcd{ std::gcd(productNum, productDen) };
 
