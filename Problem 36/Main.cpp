@@ -10,19 +10,25 @@
 
 #include <iostream>
 #include <string>
-#include <bitset>
 
 auto reverseString(const std::string& s) -> std::string {
   return std::string(s.rbegin(), s.rend());
 }
 
-auto isBinaryPalindrome(const int& num) -> bool {
-  auto       binary { std::bitset<20>(num).to_string() };
-  const auto pos    { binary.find_first_not_of('0') };
+auto reverseBits(unsigned int num) -> unsigned int {
+  auto reverseNum{ 0U };
 
-  binary = binary.substr(pos);
+  while (num > 0) {
+    reverseNum <<= 1;
+    reverseNum  |= (num & 1);
+    num        >>= 1;
+  }
 
-  return (binary == reverseString(binary));
+  return reverseNum;
+}
+
+auto isBinaryPalindrome(const unsigned int& num) -> bool {
+  return (num == reverseBits(num));
 }
 
 auto main() -> int {
@@ -33,16 +39,12 @@ auto main() -> int {
     auto left  { std::to_string(i) };
     auto right { reverseString(left) };
 
-    const auto oddPalindrome{ std::stoi(left + right) };
+    for (auto j{ -1 }; j < 10; j++) {
+      const auto middle     { std::string{(j == -1) ? "" : std::to_string(j)} };
+      const auto palindrome { std::stoi(left + middle + right) };
 
-    if (oddPalindrome < limit && isBinaryPalindrome(oddPalindrome))
-      sum += oddPalindrome;
-
-    for (auto j{ 0 }; j < 10; j++) {
-      const auto evenPalindrome{ std::stoi(left + std::to_string(j) + right) };
-
-      if (evenPalindrome < limit && isBinaryPalindrome(evenPalindrome))
-        sum += evenPalindrome;
+      if (palindrome < limit && isBinaryPalindrome(palindrome))
+        sum += palindrome;
     }
   }
 
