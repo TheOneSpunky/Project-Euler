@@ -32,20 +32,16 @@ auto isSumOfFifthPower(int number, const std::vector<int>& powers) -> bool {
 
 auto main() -> int {
   const auto upper   { 6 * static_cast<int>(std::pow(9, 5)) };
-  auto       numbers { std::vector<int>{} };
   auto       powers  { std::vector<int>(10) };
 
   for (auto i{ 0 }; i <= 9; i++)
     powers[i] = static_cast<int>(std::pow(i, 5));
 
-  for (auto i{ 10 }; i <= upper; i++)
-    if (isSumOfFifthPower(i, powers))
-      numbers.push_back(i);
-
   auto sum{ 0 };
 
-  for (const int& number : numbers)
-    sum += number;
+  for (auto i{ 10 }; i <= upper; i++)
+    if (isSumOfFifthPower(i, powers))
+      sum += i;
 
   std::cout << sum << std::endl;
 
