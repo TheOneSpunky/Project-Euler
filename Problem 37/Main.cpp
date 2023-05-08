@@ -10,26 +10,47 @@
 
 #include <iostream>
 #include <cmath>
+#include <vector>
 
-auto isPrime(const int& n) -> bool {
+auto generatePrimesUpTo(const int& limit) -> std::vector<int> {
+  auto isPrime{ std::vector<bool>(limit + 1, true) };
+
+  isPrime[0] = false;
+  isPrime[1] = false;
+
+  for (auto i{ 2 }; i * i <= limit; ++i)
+    if (isPrime[i])
+      for (auto j{ i * i }; j <= limit; j += i)
+        isPrime[j] = false;
+
+  auto primes{ std::vector<int>{} };
+
+  for (auto i{ 2 }; i <= limit; i++)
+    if (isPrime[i])
+      primes.push_back(i);
+
+  return primes;
+}
+
+auto isPrime(const int& n, const std::vector<int>& primes) -> bool {
   if (n < 2)
     return false;
 
-  const auto limit{ std::sqrt(n) };
-
-  for (auto i{ 2 }; i <= limit; i++)
-    if (n % i == 0)
+  for (const int& prime : primes)
+    if (prime * prime > n)
+      break;
+    else if (n % prime == 0)
       return false;
 
   return true;
 }
 
-auto isTruncatablePrime(int n) -> bool {
+auto isTruncatablePrime(int n, const std::vector<int>& primes) -> bool {
   auto temp       { n };
   auto multiplier { 1 };
 
   while (temp > 0) {
-    if (!isPrime(temp))
+    if (!isPrime(temp, primes))
       return false;
 
     temp       /= 10;
@@ -37,7 +58,7 @@ auto isTruncatablePrime(int n) -> bool {
   }
 
   while (n > 0) {
-    if (!isPrime(n))
+    if (!isPrime(n, primes))
       return false;
 
     multiplier /= 10;
@@ -48,12 +69,14 @@ auto isTruncatablePrime(int n) -> bool {
 }
 
 auto main() -> int {
+  const auto primes{ generatePrimesUpTo(1'000) };
+
   auto count  { 0 };
   auto sum    { 0 };
   auto number { 23 };
 
   while (count < 11) {
-    if (isTruncatablePrime(number)) {
+    if (isTruncatablePrime(number, primes)) {
       sum += number;
       count++;
     }
