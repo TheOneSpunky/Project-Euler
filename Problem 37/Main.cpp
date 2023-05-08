@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <deque>
 
 auto generatePrimesUpTo(const int& limit) -> std::vector<int> {
   auto isPrime{ std::vector<bool>(limit + 1, true) };
@@ -46,14 +47,14 @@ auto isPrime(const int& n, const std::vector<int>& primes) -> bool {
 }
 
 auto isTruncatablePrime(int n, const std::vector<int>& primes) -> bool {
-  auto temp       { n };
-  auto multiplier { 1 };
+  auto temp{ n };
+  auto multiplier{ 1 };
 
   while (temp > 0) {
     if (!isPrime(temp, primes))
       return false;
 
-    temp       /= 10;
+    temp /= 10;
     multiplier *= 10;
   }
 
@@ -62,7 +63,7 @@ auto isTruncatablePrime(int n, const std::vector<int>& primes) -> bool {
       return false;
 
     multiplier /= 10;
-    n          %= multiplier;
+    n %= multiplier;
   }
 
   return true;
@@ -71,16 +72,22 @@ auto isTruncatablePrime(int n, const std::vector<int>& primes) -> bool {
 auto main() -> int {
   const auto primes{ generatePrimesUpTo(1'000) };
 
-  auto count  { 0 };
-  auto sum    { 0 };
-  auto number { 23 };
+  auto count{ 0 };
+  auto sum{ 0 };
+  std::deque<int> candidates{ 23, 37, 53, 73 };
 
   while (count < 11) {
+    auto number = candidates.front();
+    candidates.pop_front();
+
     if (isTruncatablePrime(number, primes)) {
       sum += number;
       count++;
     }
-    number += 2;
+
+    for (const int& digit : { 1, 3, 7, 9 }) {
+      candidates.push_back(number * 10 + digit);
+    }
   }
 
   std::cout << sum << std::endl;
