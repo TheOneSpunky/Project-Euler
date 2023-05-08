@@ -46,14 +46,21 @@ auto isCircularPrime(const int& n, const std::vector<bool>& prime) -> bool {
   if (!prime[n])
     return false;
 
-  auto rotations{ generateRotations(n) };
+  auto numStr    { std::to_string(n) };
+  auto numDigits { static_cast<int>(numStr.size()) };
 
-  for (const auto& rotation : rotations)
+  for (auto i{ 0 }; i < numDigits; i++) {
+    std::rotate(numStr.begin(), numStr.begin() + 1, numStr.end());
+
+    const auto rotation{ std::stoi(numStr) };
+
     if (!prime[rotation])
       return false;
+  }
 
   return true;
 }
+
 
 auto hasInvalidDigit(const int& n) -> bool {
   auto numStr{ std::to_string(n) };
