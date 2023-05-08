@@ -9,25 +9,23 @@
  */
 
 #include <iostream>
-#include <string>
 #include <vector>
 #include <cmath>
+#include <string>
+#include <algorithm>
 
-auto isPrime(const int& n) -> bool {
-  if (n <= 1)
-    return false;
-  else if (n <= 3)
-    return true;
-  else if (n % 2 == 0 || n % 3 == 0)
-    return false;
+auto sieveOfEratosthenes(const int& n) -> std::vector<bool> {
+  auto prime{ std::vector<bool>(n + 1, true) };
 
-  const auto limit{ std::sqrt(n) };
+  prime[0] = false;
+  prime[1] = false;
 
-  for (auto i{ 5 }; i <= limit; i += 6)
-    if (n % i == 0 || n % (i + 2) == 0)
-      return false;
+  for (auto p{ 2 }; p * p <= n; p++)
+    if (prime[p])
+      for (auto i{ p * p }; i <= n; i += p)
+        prime[i] = false;
 
-  return true;
+  return prime;
 }
 
 auto generateRotations(const int& n) -> std::vector<int> {
@@ -44,24 +42,42 @@ auto generateRotations(const int& n) -> std::vector<int> {
   return rotations;
 }
 
-auto isCircularPrime(const int& n) -> bool {
-  if (!isPrime(n))
+auto isCircularPrime(const int& n, const std::vector<bool>& prime) -> bool {
+  if (!prime[n])
     return false;
 
   auto rotations{ generateRotations(n) };
 
-  for (auto rotation : rotations)
-    if (!isPrime(rotation))
+  for (const auto& rotation : rotations)
+    if (!prime[rotation])
       return false;
 
   return true;
 }
 
+auto hasInvalidDigit(const int& n) -> bool {
+  auto numStr{ std::to_string(n) };
+
+  for (const char& c : numStr) {
+    const auto digit{ c - '0' };
+
+    if (digit % 2 == 0 || digit % 5 == 0)
+      return true;
+  }
+
+  return false;
+}
+
 auto main() -> int {
+  constexpr auto n     { 1000000 };
+  auto           prime { sieveOfEratosthenes(n) };
+
   auto count{ 0 };
 
-  for (auto i{ 2 }; i < 1000000; i++)
-    if (isCircularPrime(i))
+  for (auto i{ 2 }; i < n; i++)
+    if (i > 5 && hasInvalidDigit(i))
+      continue;
+    else if (isCircularPrime(i, prime))
       count++;
 
   std::cout << count << std::endl;
