@@ -14,17 +14,16 @@
  */
 
 #include <iostream>
-#include <cmath>
 #include <vector>
 
-auto isSumOfFifthPower(int number) -> bool {
+auto isSumOfFifthPower(int number, const std::vector<int>& powers) -> bool {
   const auto original { number };
   auto       sum      { 0 };
 
   while (number > 0) {
     const auto digit{ number % 10 };
 
-    sum    += static_cast<int>(std::pow(digit, 5));
+    sum    += powers[digit];
     number /= 10;
   }
 
@@ -32,16 +31,20 @@ auto isSumOfFifthPower(int number) -> bool {
 }
 
 auto main() -> int {
-  const auto upper   { 6 * std::pow(9, 5) }; // 6 is the maximum number of digits we need to consider
+  const auto upper   { 6 * static_cast<int>(std::pow(9, 5)) };
   auto       numbers { std::vector<int>{} };
+  auto       powers  { std::vector<int>(10) };
+
+  for (auto i{ 0 }; i <= 9; i++)
+    powers[i] = static_cast<int>(std::pow(i, 5));
 
   for (auto i{ 10 }; i <= upper; i++)
-    if (isSumOfFifthPower(i))
+    if (isSumOfFifthPower(i, powers))
       numbers.push_back(i);
 
   auto sum{ 0 };
 
-  for (int number : numbers)
+  for (const int& number : numbers)
     sum += number;
 
   std::cout << sum << std::endl;
