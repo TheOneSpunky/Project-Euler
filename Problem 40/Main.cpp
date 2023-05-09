@@ -16,25 +16,38 @@
 #include <string>
 #include <cmath>
 
-int main() {
-  auto irrationalDecimalFraction { std::string{} };
-  auto i                         { 1 };
+auto getDigitAtPos(const int& pos) {
+  auto currentPos { 0 };
+  auto digitCount { 0 };
+  auto number     { 1 };
 
-  while (irrationalDecimalFraction.size() <= 1000000) {
-    irrationalDecimalFraction += std::to_string(i);
-    i++;
+  while (currentPos < pos) {
+    auto temp{ number };
+
+    while (temp) {
+      temp /= 10;
+      digitCount++;
+    }
+
+    currentPos += digitCount;
+    digitCount  = 0;
+    number++;
   }
+  number--;
 
-  const auto d1       { irrationalDecimalFraction[0]      - '0' };
-  const auto d10      { irrationalDecimalFraction[9]      - '0' };
-  const auto d100     { irrationalDecimalFraction[99]     - '0' };
-  const auto d1000    { irrationalDecimalFraction[999]    - '0' };
-  const auto d10000   { irrationalDecimalFraction[9999]   - '0' };
-  const auto d100000  { irrationalDecimalFraction[99999]  - '0' };
-  const auto d1000000 { irrationalDecimalFraction[999999] - '0' };
-  const auto result   { d1 * d10 * d100 * d1000 * d10000 * d100000 * d1000000 };
+  const auto indexFromRight{ currentPos - pos };
 
-  std::cout << result << std::endl;
+  return (number / static_cast<int>(std::pow(10, indexFromRight))) % 10;
+}
+
+auto main() -> int {
+  const auto product {
+    getDigitAtPos(1)    * getDigitAtPos(10)    * getDigitAtPos(100)    *
+    getDigitAtPos(1000) * getDigitAtPos(10000) * getDigitAtPos(100000) *
+    getDigitAtPos(1000000)
+  };
+
+  std::cout << product << std::endl;
 
   return 0;
 }
