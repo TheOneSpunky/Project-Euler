@@ -23,10 +23,12 @@ auto gcd(int a, int b) -> int {
 }
 
 auto main() -> int {
-  constexpr auto limit          { 1000 };
-  auto           solutionCounts { std::vector<int>(limit + 1, 0) };
+  constexpr auto limit { 1000 };
+  const auto     maxM  { static_cast<int>(std::sqrt(500)) };
 
-  for (auto m{ 2 }; m * m < limit; m++)
+  auto solutionCounts{ std::vector<int>(limit + 1, 0) };
+
+  for (auto m{ 2 }; m <= maxM; m++)
     for (auto n{ 1 }; n < m; n++)
       if (((m - n) % 2 == 1) && (gcd(m, n) == 1)) {
         const auto p{ 2 * m * (m + n) };
