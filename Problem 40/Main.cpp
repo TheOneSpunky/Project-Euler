@@ -16,21 +16,15 @@
 #include <string>
 #include <cmath>
 
-auto getDigitAtPos(const int& pos) {
+auto getDigitAtPos(const int& pos) -> int {
   auto currentPos { 0 };
-  auto digitCount { 0 };
   auto number     { 1 };
 
   while (currentPos < pos) {
-    auto temp{ number };
-
-    while (temp) {
-      temp /= 10;
-      digitCount++;
-    }
+    auto temp       { number };
+    auto digitCount { static_cast<int>(std::log10(temp)) + 1 };
 
     currentPos += digitCount;
-    digitCount  = 0;
     number++;
   }
   number--;
@@ -42,9 +36,9 @@ auto getDigitAtPos(const int& pos) {
 
 auto main() -> int {
   const auto product {
-    getDigitAtPos(1)    * getDigitAtPos(10)    * getDigitAtPos(100)    *
-    getDigitAtPos(1000) * getDigitAtPos(10000) * getDigitAtPos(100000) *
-    getDigitAtPos(1000000)
+      getDigitAtPos(1)    * getDigitAtPos(10)    * getDigitAtPos(100)    *
+      getDigitAtPos(1000) * getDigitAtPos(10000) * getDigitAtPos(100000) *
+      getDigitAtPos(1000000)
   };
 
   std::cout << product << std::endl;
