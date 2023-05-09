@@ -43,12 +43,14 @@ auto concatenatedProduct(const int& num, const int& n) -> std::string {
 auto main() -> int {
   auto largestPandigital{ 0 };
 
-  for (auto i{ g_maxNineDigit }; i > 0; i--)
-    for (auto n{ 2 }; n <= g_maxOneDigit; n++) {
-      auto concatProduct{ concatenatedProduct(i, n) };
+  for (auto i{ g_maxNineDigit }; i > 0; i--) {
+    const auto max{ (i < 1000) ? g_maxOneDigit : 2 };
+
+    for (auto n{ 2 }; n <= max; n++) {
+      const auto concatProduct{ concatenatedProduct(i, n) };
 
       if (isPandigital(concatProduct)) {
-        auto pandigitalNum{ std::stoi(concatProduct) };
+        const auto pandigitalNum{ std::stoi(concatProduct) };
 
         if (pandigitalNum > largestPandigital) {
           largestPandigital = pandigitalNum;
@@ -59,6 +61,7 @@ auto main() -> int {
         }
       }
     }
+  }
 
   return 1;
 }
