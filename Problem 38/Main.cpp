@@ -17,8 +17,11 @@
 #include <string>
 #include <algorithm>
 
+constexpr auto g_maxOneDigit  { 9 };
+constexpr auto g_maxNineDigit { 9876 };
+
 auto isPandigital(const std::string& num) -> bool {
-  if (num.size() != 9)
+  if (num.size() != g_maxOneDigit)
     return false;
 
   auto sortedNum{ num };
@@ -28,7 +31,7 @@ auto isPandigital(const std::string& num) -> bool {
   return (sortedNum == "123456789");
 }
 
-auto concatenatedProduct(int num, int n) -> std::string {
+auto concatenatedProduct(const int& num, const int& n) -> std::string {
   auto concatProduct{ std::string{} };
 
   for (auto i{ 1 }; i <= n; i++)
@@ -38,24 +41,24 @@ auto concatenatedProduct(int num, int n) -> std::string {
 }
 
 auto main() -> int {
-  constexpr auto upper { 9876 };
-  constexpr auto lower { 9 };
-
   auto largestPandigital{ 0 };
 
-  for (auto i{ 1 }; i <= upper; i++)
-    for (auto n{ 2 }; n <= lower; n++) {
+  for (auto i{ g_maxNineDigit }; i > 0; i--)
+    for (auto n{ 2 }; n <= g_maxOneDigit; n++) {
       auto concatProduct{ concatenatedProduct(i, n) };
 
       if (isPandigital(concatProduct)) {
         auto pandigitalNum{ std::stoi(concatProduct) };
 
-        if (pandigitalNum > largestPandigital)
+        if (pandigitalNum > largestPandigital) {
           largestPandigital = pandigitalNum;
+
+          std::cout << largestPandigital << std::endl;
+
+          return 0;
+        }
       }
     }
 
-  std::cout << largestPandigital << std::endl;
-
-  return 0;
+  return 1;
 }
