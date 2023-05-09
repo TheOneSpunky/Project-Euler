@@ -38,15 +38,19 @@ auto main() -> int {
     for (auto i{ 1 }; i <= n; i++)
       digits[i - 1] = i;
 
+    std::sort(digits.begin(), digits.end(), std::greater<int>());
+
     do {
       auto num{ 0 };
 
       for (const int& digit : digits)
         num = num * 10 + digit;
 
-      if (isPrime(num))
-        largestPandigitalPrime = std::max(largestPandigitalPrime, num);
-    } while (std::next_permutation(digits.begin(), digits.end()));
+      if (isPrime(num)) {
+        largestPandigitalPrime = num;
+        break;
+      }
+    } while (std::prev_permutation(digits.begin(), digits.end()));
 
     if (largestPandigitalPrime > 0)
       break;
