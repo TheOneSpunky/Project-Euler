@@ -52,7 +52,7 @@ auto isPandigital(int n) -> bool {
 }
 
 auto main() -> int {
-  constexpr auto maxn                   { 9 };
+  constexpr auto maxn                   { 7 };
   auto           largestPandigitalPrime { 0 };
 
   for (auto n{ 1 }; n <= maxn; n++) {
