@@ -16,12 +16,17 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <cmath>
+#include <unordered_set>
 
-auto isTriangleNumber(const int& num) -> bool {
-  const auto n{ static_cast<int>((-1 + std::sqrt(1 + 8 * num)) / 2) };
+auto generateTriangleNumbers(const int& max) -> std::unordered_set<int> {
+  auto triangleNumbers{ std::unordered_set<int>{} };
 
-  return num == n * (n + 1) / 2;
+  for (auto n{ 1 }, i{ n * (n + 1) / 2 }; i < max; i = (n * (n + 1) / 2)) {
+    triangleNumbers.insert(i);
+    n++;
+  }
+
+  return triangleNumbers;
 }
 
 auto wordValue(const std::string& word) -> int {
@@ -52,11 +57,19 @@ auto readWords(const std::string& filename) -> std::vector<std::string> {
 }
 
 auto main() -> int {
-  const auto words { readWords("words.txt") };
-  auto       count { 0 };
+  const auto words         { readWords("words.txt") };
+  auto       count         { 0 };
+  auto       maxWordLength { 0 };
 
   for (const std::string& word : words)
-    if (isTriangleNumber(wordValue(word)))
+    if (word.length() > maxWordLength)
+      maxWordLength = static_cast<int>(word.length());
+
+  const auto maxValue        { ('Z' - 'A' + 1) * maxWordLength };
+  const auto triangleNumbers { generateTriangleNumbers(maxValue) };
+
+  for (const std::string& word : words)
+    if (triangleNumbers.find(wordValue(word)) != triangleNumbers.end())
       count++;
 
   std::cout << count << std::endl;
