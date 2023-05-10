@@ -19,9 +19,9 @@
 #include <cmath>
 
 auto isTriangleNumber(const int& num) -> bool {
-  const auto n{ static_cast<int>(std::sqrt(2 * num)) };
+  const auto n{ static_cast<int>((-1 + std::sqrt(1 + 8 * num)) / 2) };
 
-  return (num == n * (n + 1) / 2);
+  return num == n * (n + 1) / 2;
 }
 
 auto wordValue(const std::string& word) -> int {
