@@ -17,21 +17,18 @@
  */
 
 #include <iostream>
-#include <array>
 #include <vector>
-#include <algorithm>
+#include <array>
 
-auto hasSubstringDivisibility(const std::vector<int>& digits) -> bool {
+auto canPrune(const std::vector<int>& digits, const int& depth) -> bool {
   constexpr auto divisors{ std::array<int, 7>{2, 3, 5, 7, 11, 13, 17} };
 
-  for (auto i{ 1ULL }; i < digits.size() - 2; i++) {
-    const auto num{ digits[i] * 100 + digits[i + 1] * 10 + digits[i + 2] };
+  if (depth < 3)
+    return false;
 
-    if (num % divisors[i - 1] != 0)
-      return false;
-  }
+  const auto num{ digits[depth - 2] * 100 + digits[depth - 1] * 10 + digits[depth] };
 
-  return true;
+  return (num % divisors[depth - 3] != 0);
 }
 
 auto vectorToNumber(const std::vector<int>& digits) -> long long {
@@ -39,30 +36,35 @@ auto vectorToNumber(const std::vector<int>& digits) -> long long {
 
   for (const int& digit : digits)
     num = num * 10 + digit;
-
+  
   return num;
 }
 
-auto generatePandigitalNumbers(std::vector<int>& digits, const int& depth, long long& sum) -> void {
-  if (depth == digits.size()) {
-    if (hasSubstringDivisibility(digits))
-      sum += vectorToNumber(digits);
+auto dfs(std::vector<int>& digits, std::vector<bool>& used, int depth, long long& sum) -> void {
+  if (depth == 10) {
+    sum += vectorToNumber(digits);
 
     return;
   }
 
-  for (auto i{ depth }; i < digits.size(); i++) {
-    std::swap(digits[i], digits[depth]);
-    generatePandigitalNumbers(digits, depth + 1, sum);
-    std::swap(digits[i], digits[depth]);
-  }
+  for (auto i{ static_cast<int>(depth == 0) }; i <= 9; i++)
+    if (!used[i]) {
+      digits[depth] = i;
+      used[i]       = true;
+
+      if (!canPrune(digits, depth))
+        dfs(digits, used, depth + 1, sum);
+
+      used[i] = false;
+    }
 }
 
 auto main() -> int {
-  auto digits { std::vector<int>{0, 1, 2, 3, 4, 5, 6, 7, 8, 9} };
+  auto digits { std::vector<int>(10) };
+  auto used   { std::vector<bool>(10, false) };
   auto sum    { 0LL };
 
-  generatePandigitalNumbers(digits, 0, sum);
+  dfs(digits, used, 0, sum);
 
   std::cout << sum << std::endl;
 
