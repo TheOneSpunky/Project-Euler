@@ -17,10 +17,9 @@
  */
 
 #include <iostream>
-#include <vector>
 #include <array>
 
-auto canPrune(const std::vector<int>& digits, const int& depth) -> bool {
+auto canPrune(const std::array<int, 10>& digits, const int& depth) -> bool {
   constexpr auto divisors{ std::array<int, 7>{2, 3, 5, 7, 11, 13, 17} };
 
   if (depth < 3)
@@ -31,18 +30,9 @@ auto canPrune(const std::vector<int>& digits, const int& depth) -> bool {
   return (num % divisors[depth - 3] != 0);
 }
 
-auto vectorToNumber(const std::vector<int>& digits) -> long long {
-  auto num{ 0LL };
-
-  for (const int& digit : digits)
-    num = num * 10 + digit;
-  
-  return num;
-}
-
-auto dfs(std::vector<int>& digits, std::vector<bool>& used, int depth, long long& sum) -> void {
+auto dfs(std::array<int, 10>& digits, std::array<bool, 10>& used, const int& depth, long long& sum, const long long& current_sum) -> void {
   if (depth == 10) {
-    sum += vectorToNumber(digits);
+    sum += current_sum;
 
     return;
   }
@@ -53,18 +43,18 @@ auto dfs(std::vector<int>& digits, std::vector<bool>& used, int depth, long long
       used[i]       = true;
 
       if (!canPrune(digits, depth))
-        dfs(digits, used, depth + 1, sum);
+        dfs(digits, used, depth + 1, sum, current_sum * 10 + i);
 
       used[i] = false;
     }
 }
 
 auto main() -> int {
-  auto digits { std::vector<int>(10) };
-  auto used   { std::vector<bool>(10, false) };
+  auto digits { std::array<int, 10>{} };
+  auto used   { std::array<bool, 10>{false} };
   auto sum    { 0LL };
 
-  dfs(digits, used, 0, sum);
+  dfs(digits, used, 0, sum, 0);
 
   std::cout << sum << std::endl;
 
