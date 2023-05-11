@@ -13,38 +13,43 @@
  */
 
 #include <iostream>
-#include <unordered_set>
 
-auto triangle(long long n) -> long long {
+auto triangle(const long long& n) -> long long {
   return (n * (n + 1) / 2);
 }
 
-auto pentagonal(long long n) -> long long {
+auto pentagonal(const long long& n) -> long long {
   return (n * (3 * n - 1) / 2);
 }
 
-auto hexagonal(long long n) -> long long {
+auto hexagonal(const long long& n) -> long long {
   return (n * (2 * n - 1));
 }
 
+auto isTriangle(const long long& number) -> bool {
+  const auto n{ static_cast<long long>(std::sqrt(2 * number)) };
+
+  return (triangle(n) == number || triangle(n + 1) == number);
+}
+
 auto main() -> int {
-  constexpr auto max{ 100'000LL };
+  for (auto i{ 144 }, j{ 166 };;) {
+    const auto hex  { hexagonal(i) };
+    const auto pent { pentagonal(j) };
 
-  auto triangles   { std::unordered_set<long long>{} };
-  auto pentagonals { std::unordered_set<long long>{} };
-  auto hexagonals  { std::unordered_set<long long>{} };
+    if (hex == pent) {
+      if (isTriangle(hex)) {
+        std::cout << hex << std::endl;
+        break;
+      }
 
-  for (auto n{ 1LL }; n <= max; n++) {
-    triangles.insert(triangle(n));
-    pentagonals.insert(pentagonal(n));
-    hexagonals.insert(hexagonal(n));
-  }
-
-  for (const auto& t : triangles)
-    if (t > 40755 && pentagonals.find(t) != pentagonals.end() && hexagonals.find(t) != hexagonals.end()) {
-      std::cout << t << std::endl;
-      break;
+      i++; j++;
     }
+    else if (hex < pent)
+      i++;
+    else
+      j++;
+  }
 
   return 0;
 }
