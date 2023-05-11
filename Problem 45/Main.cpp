@@ -13,42 +13,26 @@
  */
 
 #include <iostream>
-
-auto triangle(const long long& n) -> long long {
-  return (n * (n + 1) / 2);
-}
-
-auto pentagonal(const long long& n) -> long long {
-  return (n * (3 * n - 1) / 2);
-}
+#include <cmath>
 
 auto hexagonal(const long long& n) -> long long {
-  return (n * (2 * n - 1));
+  return n * (2 * n - 1);
 }
 
-auto isTriangle(const long long& number) -> bool {
-  const auto n{ static_cast<long long>(std::sqrt(2 * number)) };
+auto isPentagonal(const long long& number) -> bool {
+  const auto n{ (std::sqrt(24 * number + 1) + 1) / 6 };
 
-  return (triangle(n) == number || triangle(n + 1) == number);
+  return (n == static_cast<long long>(n));
 }
 
 auto main() -> int {
-  for (auto i{ 144 }, j{ 166 };;) {
-    const auto hex  { hexagonal(i) };
-    const auto pent { pentagonal(j) };
+  for (auto i{ 144LL };; i++) {
+    const auto hex{ hexagonal(i) };
 
-    if (hex == pent) {
-      if (isTriangle(hex)) {
-        std::cout << hex << std::endl;
-        break;
-      }
-
-      i++; j++;
+    if (isPentagonal(hex)) {
+      std::cout << hex << std::endl;
+      break;
     }
-    else if (hex < pent)
-      i++;
-    else
-      j++;
   }
 
   return 0;
