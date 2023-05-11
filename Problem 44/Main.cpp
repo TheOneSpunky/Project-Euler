@@ -15,13 +15,35 @@
 #include <set>
 #include <limits>
 #include <cmath>
+#include <thread>
+#include <mutex>
+#include <algorithm>
 
-auto pentagonal(const int& n) -> int {
+inline auto pentagonal(const int& n) -> int {
   return (n * (3 * n - 1) / 2);
 }
 
-auto isPentagonal(int num, const std::set<int>& pentagonalNumbers) -> bool {
+inline auto isPentagonal(const int& num, const std::set<int>& pentagonalNumbers) -> bool {
   return (pentagonalNumbers.count(num) > 0);
+}
+
+auto calculateD(const int& start, const int& end, const std::vector<int>& pentagonalNumbersList, const std::set<int>& pentagonalNumbersSet, std::mutex& mtx, int& D) -> void {
+  auto localD{ std::numeric_limits<int>::max() };
+
+  for (auto i{ start }; i < end; i++)
+    for (auto j{ i + 1 }; j < 3000; j++) {
+      const auto diff{ pentagonalNumbersList[j] - pentagonalNumbersList[i] };
+
+      if (isPentagonal(diff, pentagonalNumbersSet)) {
+        const auto sum{ pentagonalNumbersList[i] + pentagonalNumbersList[j] };
+
+        if (isPentagonal(sum, pentagonalNumbersSet))
+          localD = std::min(localD, diff);
+      }
+    }
+
+  std::lock_guard<std::mutex> lock(mtx);
+  D = std::min(D, localD);
 }
 
 auto main() -> int {
@@ -35,16 +57,20 @@ auto main() -> int {
     pentagonalNumbersSet.insert(pentNum);
   }
 
-  auto D{ std::numeric_limits<int>::max() };
+  const auto threadCount { std::thread::hardware_concurrency() };
+  auto       threads     { std::vector<std::thread>(threadCount) };
+  auto       D           { std::numeric_limits<int>::max() };
+  auto       mtx         { std::mutex{} };
 
-  for (auto i{ 0 }; i < 3000; i++)
-    for (auto j{ i + 1 }; j < 3000; j++) {
-      const auto sum  { pentagonalNumbersList[i] + pentagonalNumbersList[j] };
-      const auto diff { pentagonalNumbersList[j] - pentagonalNumbersList[i] };
+  for (auto i{ 0u }; i < threadCount; i++) {
+    const auto start { i * 3000 / threadCount };
+    const auto end   { (i + 1) * 3000 / threadCount };
 
-      if (isPentagonal(sum, pentagonalNumbersSet) && isPentagonal(diff, pentagonalNumbersSet))
-        D = std::min(D, diff);
-    }
+    threads[i] = std::thread(calculateD, start, end, std::ref(pentagonalNumbersList), std::ref(pentagonalNumbersSet), std::ref(mtx), std::ref(D));
+  }
+
+  for (auto& thread : threads)
+    thread.join();
 
   std::cout << D << std::endl;
 
