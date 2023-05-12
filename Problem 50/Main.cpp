@@ -16,43 +16,46 @@
 #include <vector>
 #include <algorithm>
 
-auto isPrime(const int& n) -> bool {
-  if (n < 2)
-    return false;
+constexpr auto g_limit{ 1000000 };
 
-  for (auto i{ 2 }; i * i <= n; i++)
-    if (n % i == 0)
-      return false;
+auto sieve() -> std::vector<int> {
+  auto prime{ std::vector<bool>(g_limit, true) };
 
-  return true;
+  for (auto p{ 2 }; p * p < g_limit; p++)
+    if (prime[p])
+      for (auto i{ p * p }; i < g_limit; i += p)
+        prime[i] = false;
+
+  auto primes{ std::vector<int>{} };
+
+  for (auto i{ 2 }; i < g_limit; i++)
+    if (prime[i])
+      primes.push_back(i);
+
+  return primes;
 }
 
 auto main() -> int {
-  constexpr auto limit  { 1'000'000 };
-  auto           primes { std::vector<int>{} };
+  const auto primes { sieve() };
+  const auto n      { static_cast<int>(primes.size()) };
+  auto       prefix { std::vector<int>(n + 1, 0) };
 
-  for (auto i{ 2 }; i < limit; i++)
-    if (isPrime(i))
-      primes.push_back(i);
+  for (auto i{ 0 }; i < n; i++)
+    prefix[i + 1] = prefix[i] + primes[i];
 
   auto maxLength { 0 };
   auto maxPrime  { 0 };
 
-  for (auto i{ 0 }; i < primes.size(); i++) {
-    auto sum{ 0 };
-
-    for (auto j{ i }; j < primes.size(); j++) {
-      sum += primes[j];
-
-      if (sum >= limit)
+  for (auto i{ maxLength }; i < n; i++)
+    for (auto j{ i - (maxLength + 1) }; j >= 0; j--) {
+      if (prefix[i] - prefix[j] >= g_limit)
         break;
 
-      if (isPrime(sum) && (j - i + 1) > maxLength) {
-        maxLength = j - i + 1;
-        maxPrime = sum;
+      if (std::binary_search(primes.begin(), primes.end(), prefix[i] - prefix[j])) {
+        maxLength = i - j;
+        maxPrime  = prefix[i] - prefix[j];
       }
     }
-  }
 
   std::cout << maxPrime << std::endl;
 
