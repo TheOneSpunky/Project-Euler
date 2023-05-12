@@ -14,7 +14,10 @@
 #include <map>
 #include <algorithm>
 #include <thread>
+#include <atomic>
 #include <cmath>
+
+auto g_found{ std::atomic<bool>(false) };
 
 auto generatePrimes(const int& n) -> std::vector<int> {
   auto isPrime{ std::vector<bool>(n + 1, true) };
@@ -40,11 +43,15 @@ auto findSequences(const std::vector<int>& group) -> void {
 
   for (auto i{ 0 }; i < size; i++)
     for (auto j{ i + 1 }; j < size; j++) {
+      if (g_found)
+        return;
+
       const auto k{ 2 * group[j] - group[i] };
 
       if (std::binary_search(group.begin(), group.end(), k))
         if (group[i] != 1487 || group[j] != 4817) {
           std::cout << group[i] << group[j] << k << std::endl;
+          g_found = true;
           return;
         }
     }
