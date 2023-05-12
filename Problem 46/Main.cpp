@@ -15,9 +15,9 @@
  * What is the smallest odd composite that cannot be written as the sum of a prime and twice a square?
  */
 
-#include<iostream>
-#include<vector>
-#include<cmath>
+#include <iostream>
+#include <vector>
+#include <cmath>
 
 auto primeSieve(const int& n) -> std::vector<bool> {
   auto prime{ std::vector<bool>(n + 1, true) };
@@ -56,10 +56,12 @@ auto main() -> int {
       auto found{ false };
 
       for (auto j{ 2 }; j < i && !found; j++)
-        if (prime[j])
-          for (auto k{ 0 }; k * k <= (i - j) / 2 && !found; k++)
-            if (j + 2 * k * k == i)
-              found = true;
+        if (prime[j]) {
+          const auto k{ std::sqrt((i - j) / 2.0) };
+
+          if (k == static_cast<int>(k))
+            found = true;
+        }
 
       if (!found) {
         std::cout << i << std::endl;
