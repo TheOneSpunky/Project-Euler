@@ -18,8 +18,8 @@
 #include <iostream>
 #include <vector>
 
-auto prime_factors(int num) -> std::vector<int> {
-  auto factors{ std::vector<int>{} };
+auto numPrimeFactors(int num) -> int {
+  auto factors{ 0 };
 
   for (auto i{ 2 }; i * i <= num; i++) {
     if (num % i)
@@ -28,25 +28,33 @@ auto prime_factors(int num) -> std::vector<int> {
     while (num % i == 0)
       num /= i;
 
-    factors.push_back(i);
+    factors++;
   }
 
   if (num > 1)
-    factors.push_back(num);
+    factors++;
 
   return factors;
 }
 
 auto main() -> int {
-  for (auto i{ 2 };; i++) {
-    if (prime_factors(i).size() != 4)
+  for (auto i{ 2 };;) {
+    if (numPrimeFactors(i) != 4) {
+      i++;
       continue;
-    else if (prime_factors(i + 1).size() != 4)
+    }
+    else if (numPrimeFactors(i + 1) != 4) {
+      i += 2;
       continue;
-    else if (prime_factors(i + 2).size() != 4)
+    }
+    else if (numPrimeFactors(i + 2) != 4) {
+      i += 3;
       continue;
-    else if (prime_factors(i + 3).size() != 4)
+    }
+    else if (numPrimeFactors(i + 3) != 4) {
+      i += 4;
       continue;
+    }
 
     std::cout << i << std::endl;
 
