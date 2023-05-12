@@ -13,53 +13,67 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <thread>
 #include <cmath>
 
-auto isPrime(const int& n) -> bool {
-  if (n <= 1)
-    return false;
-  else if (n == 2)
-    return true;
-  else if (n % 2 == 0)
-    return false;
+auto generatePrimes(const int& n) -> std::vector<int> {
+  auto isPrime{ std::vector<bool>(n + 1, true) };
 
-  const auto limit{ static_cast<int>(std::sqrt(n)) };
+  isPrime[0] = isPrime[1] = false;
 
-  for (auto i{ 3 }; i <= limit; i += 2)
-    if (n % i == 0)
-      return false;
+  for (auto i{ 2 }; i * i <= n; ++i)
+    if (isPrime[i])
+      for (auto j{ i * i }; j <= n; j += i)
+        isPrime[j] = false;
 
-  return true;
+  auto primes{ std::vector<int>{} };
+
+  for (auto i{ 1000 }; i <= n; i++)
+    if (isPrime[i])
+      primes.push_back(i);
+
+  return primes;
+}
+
+auto findSequences(const std::vector<int>& group) -> void {
+  const auto size{ group.size() };
+
+  for (auto i{ 0 }; i < size; i++)
+    for (auto j{ i + 1 }; j < size; j++) {
+      const auto k{ 2 * group[j] - group[i] };
+
+      if (std::binary_search(group.begin(), group.end(), k))
+        if (group[i] != 1487 || group[j] != 4817) {
+          std::cout << group[i] << group[j] << k << std::endl;
+          return;
+        }
+    }
 }
 
 auto main() -> int {
-  auto groups{ std::map<std::string, std::vector<int>>{} };
+  auto groups { std::map<std::string, std::vector<int>>{} };
+  auto primes { generatePrimes(9999) };
 
-  for (auto i{ 1000 }; i < 10000; ++i)
-    if (isPrime(i)) {
-      auto digits{ std::to_string(i) };
+  for (const auto& prime : primes) {
+    auto digits{ std::to_string(prime) };
 
-      std::sort(digits.begin(), digits.end());
-      groups[digits].push_back(i);
-    }
+    std::sort(digits.begin(), digits.end());
+    groups[digits].push_back(prime);
+  }
+
+  auto threads{ std::vector<std::thread>{} };
 
   for (auto& [digits, group] : groups) {
     std::sort(group.begin(), group.end());
 
-    const auto size{ group.size() };
+    if (group.size() < 3)
+      continue;
 
-    for (auto i{ 0 }; i < size; i++)
-      for (auto j{ i + 1 }; j < size; j++) {
-        const auto k{ 2 * group[j] - group[i] };
-
-        if (std::binary_search(group.begin(), group.end(), k))
-          if (group[i] != 1487 || group[j] != 4817) {
-            std::cout << group[i] << group[j] << k << std::endl;
-
-            return 0;
-          }
-      }
+    threads.push_back(std::thread(findSequences, group));
   }
+
+  for (auto& thread : threads)
+    thread.join();
 
   return 0;
 }
