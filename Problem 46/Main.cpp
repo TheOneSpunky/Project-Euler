@@ -19,55 +19,60 @@
 #include <vector>
 #include <cmath>
 
-auto primeSieve(const int& n) -> std::vector<bool> {
-  auto prime{ std::vector<bool>(n + 1, true) };
+auto primeSieve(const int& n) -> std::vector<int> {
+  auto isPrime{ std::vector<bool>(n + 1, true) };
 
-  prime[0] = prime[1] = false;
+  isPrime[0] = isPrime[1] = false;
 
   for (auto p{ 2 }; p * p <= n; p++)
-    if (prime[p] == true)
+    if (isPrime[p] == true)
       for (auto i{ p * p }; i <= n; i += p)
-        prime[i] = false;
+        isPrime[i] = false;
 
-  return prime;
+  auto primes{ std::vector<int>{} };
+
+  for (auto i{ 2 }; i <= n; ++i)
+    if (isPrime[i])
+      primes.push_back(i);
+
+  return primes;
 }
 
-auto isComposite(const int& n) -> bool {
-  if (n <= 1)
-    return false;
-  else if (n <= 3)
-    return false;
-  else if (n % 2 == 0 || n % 3 == 0)
-    return true;
-
-  for (auto i{ 5 }; i * i <= n; i += 6)
-    if (n % i == 0 || n % (i + 2) == 0)
+auto isComposite(int n, const std::vector<int>& primes) -> bool {
+  for (const auto& p : primes)
+    if (p >= n)
+      break;
+    else if (n % p == 0)
       return true;
 
   return false;
 }
 
 auto main() -> int {
-  constexpr auto n     { 10000 };
-  auto           prime { primeSieve(n) };
+  constexpr auto n      { 10000 };
+  auto           primes { primeSieve(n) };
 
-  for (auto i{ 9 }; i <= n; i += 2)
-    if (isComposite(i)) {
+  for (auto i{ 9 }; i <= n; i += 2) {
+    if (isComposite(i, primes)) {
       auto found{ false };
 
-      for (auto j{ 2 }; j < i && !found; j++)
-        if (prime[j]) {
-          const auto k{ std::sqrt((i - j) / 2.0) };
+      for (const auto& p : primes) {
+        if (p >= i)
+          break;
 
-          if (k == static_cast<int>(k))
-            found = true;
+        const auto k{ std::sqrt((i - p) / 2.0) };
+
+        if (k == static_cast<int>(k)) {
+          found = true;
+          break;
         }
-
+      }
       if (!found) {
         std::cout << i << std::endl;
         break;
       }
     }
+  }
 
   return 0;
 }
