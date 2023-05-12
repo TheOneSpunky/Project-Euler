@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include <vector>
+#include <deque>
 
 auto numPrimeFactors(int num) -> int {
   auto factors{ 0 };
@@ -38,27 +39,16 @@ auto numPrimeFactors(int num) -> int {
 }
 
 auto main() -> int {
-  for (auto i{ 2 };;) {
-    if (numPrimeFactors(i) != 4) {
-      i++;
-      continue;
-    }
-    else if (numPrimeFactors(i + 1) != 4) {
-      i += 2;
-      continue;
-    }
-    else if (numPrimeFactors(i + 2) != 4) {
-      i += 3;
-      continue;
-    }
-    else if (numPrimeFactors(i + 3) != 4) {
-      i += 4;
-      continue;
-    }
+  auto queue{ std::deque<int>(4, 0) };
 
-    std::cout << i << std::endl;
+  for (auto i{ 2 };; i++) {
+    queue.pop_front();
+    queue.push_back(numPrimeFactors(i + 3));
 
-    break;
+    if (queue[0] == 4 && queue[1] == 4 && queue[2] == 4 && queue[3] == 4) {
+      std::cout << i << std::endl;
+      break;
+    }
   }
 
   return 0;
