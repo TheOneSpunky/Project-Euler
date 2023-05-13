@@ -14,10 +14,10 @@
 #include <bitset>
 #include <algorithm>
 
-constexpr auto g_limit { 1000000 };
+constexpr auto g_limit { 1'000'000 };
 auto           g_sieve { std::bitset<g_limit>{} };
 
-auto generate_primes() -> std::vector<int> {
+auto generatePrimes() -> std::vector<int> {
   g_sieve.set();
   g_sieve[0] = g_sieve[1] = 0;
 
@@ -87,7 +87,7 @@ auto findFamily(const std::vector<int>& primes) -> int {
 }
 
 auto main() -> int {
-  auto primes{ generate_primes() };
+  auto primes{ generatePrimes() };
 
   std::cout << findFamily(primes) << std::endl;
 
