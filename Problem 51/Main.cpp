@@ -17,7 +17,7 @@
 constexpr auto g_limit { 1000000 };
 auto           g_sieve { std::bitset<g_limit>{} };
 
-std::vector<int> generate_primes() {
+auto generate_primes() -> std::vector<int> {
   g_sieve.set();
   g_sieve[0] = g_sieve[1] = 0;
 
@@ -35,12 +35,24 @@ std::vector<int> generate_primes() {
   return primes;
 }
 
+auto hasRepeatedDigits(const int& n) -> bool {
+  auto num{ std::to_string(n) };
+
+  std::sort(num.begin(), num.end());
+
+  return (std::adjacent_find(num.begin(), num.end()) != num.end());
+}
+
 auto findFamily(const std::vector<int>& primes) -> int {
   for (const auto& prime : primes) {
+    if (!hasRepeatedDigits(prime))
+      continue;
+
     auto primeStr{ std::to_string(prime) };
 
     for (auto digit{ '0' }; digit <= '9'; digit++) {
-      auto count{ 0 };
+      auto count { 0 };
+      auto fail  { 0 };
 
       for (auto replace{ '0' }; replace <= '9'; replace++) {
         auto replaced  { primeStr };
@@ -49,6 +61,11 @@ auto findFamily(const std::vector<int>& primes) -> int {
 
         if (replaced[0] != '0' && g_sieve[candidate])
           count++;
+        else
+          fail++;
+
+        if (fail > 2)
+          break;
       }
 
       if (count == 8)
