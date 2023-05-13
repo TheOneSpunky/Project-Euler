@@ -35,22 +35,32 @@ auto generate_primes() -> std::vector<int> {
   return primes;
 }
 
-auto hasRepeatedDigits(const int& n) -> bool {
+auto hasRepeatedDigits(const int& n, char& repeatedDigit) -> bool {
   auto num{ std::to_string(n) };
 
   std::sort(num.begin(), num.end());
 
-  return (std::adjacent_find(num.begin(), num.end()) != num.end());
+  for (auto i{ 0U }; i < num.size() - 1; i++) {
+    if (num[i] == num[i + 1] && num[i] <= '2') {
+      repeatedDigit = num[i];
+
+      return true;
+    }
+  }
+
+  return false;
 }
 
 auto findFamily(const std::vector<int>& primes) -> int {
   for (const auto& prime : primes) {
-    if (!hasRepeatedDigits(prime))
+    auto repeatedDigit{ char{} };
+
+    if (!hasRepeatedDigits(prime, repeatedDigit))
       continue;
 
     auto primeStr{ std::to_string(prime) };
 
-    for (auto digit{ '0' }; digit <= '9'; digit++) {
+    for (auto digit{ '0' }; digit <= '2'; digit++) {
       auto count { 0 };
       auto fail  { 0 };
 
