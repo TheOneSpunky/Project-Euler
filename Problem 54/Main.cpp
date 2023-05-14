@@ -71,19 +71,21 @@ struct Card {
 using Hand = std::array<Card, 5>;
 
 auto parseHand(const std::vector<std::string>& cards) -> Hand {
-  auto hand       { Hand{0, 0} };
-  auto cardValues { std::map<char, int> {
+  static auto cardValues{ std::map<char, int> {
     {'2', 2}, {'3', 3}, {'4', 4},  {'5', 5},  {'6', 6},  {'7', 7},
     {'8', 8}, {'9', 9}, {'T', 10}, {'J', 11}, {'Q', 12}, {'K', 13}, {'A', 14} }
   };
 
-  for (auto i{ 0ULL }; i < cards.size(); i++) {
-    auto card{ Card{} };
+  auto hand{ Hand{} };
 
-    card.m_value = cardValues[cards[i][0]];
-    card.m_suit  = cards[i][1];
-    hand[i]      = card;
+  for (auto i{ 0ULL }; i < cards.size(); i++) {
+    hand[i].m_value = cardValues[cards[i][0]];
+    hand[i].m_suit  = cards[i][1];
   }
+
+  std::sort(hand.begin(), hand.end(), [](const Card& a, const Card& b) {
+    return a.m_value < b.m_value;
+  });
 
   return hand;
 }
@@ -165,9 +167,8 @@ auto determineRank(const Hand& hand) -> Rank {
   return Rank::HighCard;
 }
 
-
 bool compareHands(const Hand& hand1, const Hand& hand2, Rank rank) {
-  auto count1 { std::map<int, int>{} }; 
+  auto count1 { std::map<int, int>{} };
   auto count2 { std::map<int, int>{} };
 
   for (auto i{ 0 }; i < 5; i++) {
@@ -175,36 +176,19 @@ bool compareHands(const Hand& hand1, const Hand& hand2, Rank rank) {
     count2[hand2[i].m_value]++;
   }
 
-  switch (rank) {
-  case Rank::HighCard:
-  case Rank::Flush:
-  case Rank::Straight:
-  case Rank::StraightFlush:
-    for (auto i{ 14 }; i >= 2; i--) {
-      if (count1[i] > count2[i])
-        return true;
-      if (count1[i] < count2[i])
-        return false;
-    }
-    break;
-
-  case Rank::Pair:
-  case Rank::TwoPairs:
-  case Rank::ThreeOfAKind:
-  case Rank::FourOfAKind:
-  case Rank::FullHouse:
+  if (rank == Rank::Pair || rank == Rank::TwoPairs || rank == Rank::ThreeOfAKind || rank == Rank::FourOfAKind || rank == Rank::FullHouse) {
     for (auto count{ 4 }; count >= 1; count--)
-      for (auto i{ 14 }; i >= 2; i--) {
+      for (auto i{ 14 }; i >= 2; i--)
         if (count1[i] == count && count2[i] < count)
           return true;
-        if (count2[i] == count && count1[i] < count)
+        else if (count2[i] == count && count1[i] < count)
           return false;
-      }
-    break;
-
-  case Rank::RoyalFlush:
-    return false;
   }
+  else for (auto i{ 14 }; i >= 2; i--)
+    if (count1[i] > count2[i])
+      return true;
+    else if (count1[i] < count2[i])
+      return false;
 
   return false;
 }
