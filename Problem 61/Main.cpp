@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <vector>
+#include <unordered_set>
 #include <algorithm>
 
 auto figurateNumbers(const int& s) -> std::vector<int> {
@@ -40,16 +41,16 @@ auto figurateNumbers(const int& s) -> std::vector<int> {
   return numbers;
 }
 
-auto dfs(const int& node, const int& type, std::vector<int>& path, std::vector<int>& pathType, const std::vector<std::vector<int>>& graph, const std::vector<std::vector<int>>& typeGraph) -> bool {
+auto dfs(const int& node, const int& type, std::vector<int>& path, std::unordered_set<int>& pathType, const std::vector<std::vector<int>>& graph, const std::vector<std::vector<int>>& typeGraph) -> bool {
   path.push_back(node);
-  pathType.push_back(type);
+  pathType.insert(type);
 
   if (path.size() == 6) {
     if (path[0] / 100 == path.back() % 100)
       return true;
 
     path.pop_back();
-    pathType.pop_back();
+    pathType.erase(type);
 
     return false;
   }
@@ -58,14 +59,14 @@ auto dfs(const int& node, const int& type, std::vector<int>& path, std::vector<i
     auto next     { graph[node][i] };
     auto nextType { typeGraph[node][i] };
 
-    if (std::find(pathType.begin(), pathType.end(), nextType) != pathType.end())
+    if (pathType.count(nextType) > 0)
       continue;
     else if (dfs(next, nextType, path, pathType, graph, typeGraph))
       return true;
   }
 
   path.pop_back();
-  pathType.pop_back();
+  pathType.erase(type);
 
   return false;
 }
@@ -93,7 +94,7 @@ auto main() -> int {
       }
 
   auto path     { std::vector<int>{} };
-  auto pathType { std::vector<int>{} };
+  auto pathType { std::unordered_set<int>{} };
 
   for (const auto& number : numbers[5])
     if (dfs(number, 5, path, pathType, graph, typeGraph))
