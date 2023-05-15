@@ -20,7 +20,9 @@ auto main() -> int {
     auto       cubeString { std::to_string(cube) };
 
     std::sort(cubeString.begin(), cubeString.end());
-    cubePermutations[cubeString].push_back(cube);
+    
+    if (cubePermutations[cubeString].size() < 5)
+      cubePermutations[cubeString].push_back(cube);
 
     if (cubePermutations[cubeString].size() == 5) {
       std::cout << cubePermutations[cubeString][0] << std::endl;
