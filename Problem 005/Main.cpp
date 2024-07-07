@@ -11,14 +11,7 @@
 #include <iostream>
 
 static constexpr auto gcd(int a, int b) -> int {
-  while (b != 0) {
-    auto c { b };
-
-    b = a % b;
-    a = c;
-  }
-
-  return a;
+  return ((b == 0) ? a : gcd(b, a % b));
 }
 
 static constexpr auto lcm(int a, int b) -> int {
