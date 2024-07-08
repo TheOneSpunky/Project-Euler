@@ -18,11 +18,30 @@ static constexpr auto lcm(int a, int b) -> int {
   return ((a / gcd(a, b)) * b);
 }
 
+static constexpr auto isPrime(int n) -> bool {
+  if (n <= 1)
+    return false;
+
+  for (auto i { 2 }; i * i <= n; i++)
+    if (!(n % i))
+      return false;
+
+  return true;
+}
+
 static constexpr auto lcmRange(int n) -> int {
   auto result { 1 };
 
-  for (auto i { 2 }; i <= n; i++)
-    result = lcm(result, i);
+  for (auto i{ 2 }; i <= n; i++) {
+    auto highestPower { i };
+
+    if (isPrime(i)) {
+      while (highestPower * i <= n)
+        highestPower *= i;
+
+      result = lcm(result, highestPower);
+    }
+  }
 
   return result;
 }
