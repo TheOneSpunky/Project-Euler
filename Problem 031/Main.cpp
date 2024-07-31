@@ -17,15 +17,15 @@
 #include <iostream>
 #include <vector>
 
-static auto findChangeCombinations(const int amount) -> int {
-  auto coins        { std::vector<int>{1, 2, 5, 10, 20, 50, 100, 200} };
-  auto combinations { std::vector<int>(amount + 1, 0) };
+static auto findChangeCombinations(const int amount) -> std::size_t {
+  auto coins        { std::vector<std::size_t>{1, 2, 5, 10, 20, 50, 100, 200} };
+  auto combinations { std::vector<std::size_t>(amount + 1, 0) };
 
   combinations[0] = 1;
 
   for (const auto& coin : coins)
     for (auto i { coin }; i <= amount; i++)
-      combinations[i] += combinations[static_cast<std::size_t>(i) - coin];
+      combinations[i] += combinations[i - coin];
 
   return combinations[amount];
 }
