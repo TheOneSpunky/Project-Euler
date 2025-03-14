@@ -1,5 +1,7 @@
 /**
- * Project Euler Problem 043 - Sub-string divisibility
+ * Project Euler: Problem 043
+ * Sub-string divisibility
+ * Solution written by Kyle Swecker
  * 
  * The number, 1406357289, is a 0 to 9 pandigital number because
  * it is made up of each of the digits 0 to 9 in some order, but

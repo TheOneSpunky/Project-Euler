@@ -1,5 +1,7 @@
 /**
- * Project Euler Problem 042 - Coded Triangle Numbers
+ * Project Euler: Problem 042
+ * Coded Triangle Numbers
+ * Solution written by Kyle Swecker
  * 
  * The nth term of the sequence of triangle numbers is given by
  * Tn = n(n + 1)/2; so the first ten triangle numbers are:
